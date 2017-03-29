@@ -3,4 +3,4 @@
 *.hex
 *.elf
 *.lst
-
+*.tmp.*
