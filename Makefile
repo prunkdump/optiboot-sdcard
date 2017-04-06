@@ -133,10 +133,12 @@ DEFS       =
 LIBS       =  -lc
 
 CC         = $(GCCROOT)avr-gcc
+CXX        = $(GCCROOT)avr-g++
 
 # Override is only needed by avr-lib build system.
 
 override CFLAGS        = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) -DF_CPU=$(AVR_FREQ) $(DEFS)
+override CXXFLAGS      = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) -DF_CPU=$(AVR_FREQ) $(DEFS)
 override LDFLAGS       = $(LDSECTIONS) -Wl,--relax -nostartfiles -nostdlib
 #-Wl,--gc-sections
 
@@ -238,7 +240,7 @@ endif
 # Virtual boot block test
 virboot8: TARGET = atmega8
 virboot8: MCU_TARGET = atmega8
-virboot8: CFLAGS += $(COMMON_OPTIONS) '-DVIRTUAL_BOOT_PARTITION' '-Dsave_vect_num=EE_RDY_vect_num'
+virboot8: CXXFLAGS += $(COMMON_OPTIONS) '-DVIRTUAL_BOOT_PARTITION' '-Dsave_vect_num=EE_RDY_vect_num'
 virboot8: AVR_FREQ ?= 16000000L 
 virboot8: LDSECTIONS  = -Wl,--section-start=.text=0x1c00 -Wl,--section-start=.version=0x1ffe
 virboot8: $(PROGRAM)_virboot8.hex
@@ -247,7 +249,7 @@ virboot8: $(PROGRAM)_virboot8.lst
 
 virboot328: TARGET = atmega328
 virboot328: MCU_TARGET = atmega328p
-virboot328: CFLAGS += $(COMMON_OPTIONS) '-DVIRTUAL_BOOT_PARTITION'
+virboot328: CXXFLAGS += $(COMMON_OPTIONS) '-DVIRTUAL_BOOT_PARTITION'
 virboot328: AVR_FREQ ?= 16000000L
 virboot328: LDSECTIONS  = -Wl,--section-start=.text=0x7d80 -Wl,--section-start=.version=0x7ffe
 virboot328: $(PROGRAM)_virboot328.hex
@@ -271,7 +273,7 @@ virboot328_isp: isp
 #
 atmega168: TARGET = atmega168
 atmega168: MCU_TARGET = atmega168
-atmega168: CFLAGS += $(COMMON_OPTIONS)
+atmega168: CXXFLAGS += $(COMMON_OPTIONS)
 atmega168: AVR_FREQ ?= 16000000L 
 atmega168: $(PROGRAM)_atmega168.hex
 atmega168: $(PROGRAM)_atmega168.lst
@@ -288,14 +290,14 @@ atmega168_isp: isp
 
 atmega16: TARGET = atmega16
 atmega16: MCU_TARGET = atmega16
-atmega16: CFLAGS += $(COMMON_OPTIONS)
+atmega16: CXXFLAGS += $(COMMON_OPTIONS)
 atmega16: AVR_FREQ ?= 16000000L 
 atmega16: $(PROGRAM)_atmega16.hex
 atmega16: $(PROGRAM)_atmega16.lst
 
 atmega328: TARGET = atmega328
 atmega328: MCU_TARGET = atmega328p
-atmega328: CFLAGS += $(COMMON_OPTIONS)
+atmega328: CXXFLAGS += $(COMMON_OPTIONS)
 atmega328: AVR_FREQ ?= 16000000L
 atmega328: LDSECTIONS  = -Wl,--section-start=.text=0x7e00 -Wl,--section-start=.version=0x7ffe
 atmega328: $(PROGRAM)_atmega328.hex
@@ -314,7 +316,7 @@ atmega328_isp: isp
 
 #Atmega1280
 atmega1280: MCU_TARGET = atmega1280
-atmega1280: CFLAGS += $(COMMON_OPTIONS) -DBIGBOOT $(UART_CMD)
+atmega1280: CXXFLAGS += $(COMMON_OPTIONS) -DBIGBOOT $(UART_CMD)
 atmega1280: AVR_FREQ ?= 16000000L
 atmega1280: LDSECTIONS  = -Wl,--section-start=.text=0x1fc00  -Wl,--section-start=.version=0x1fffe
 atmega1280: $(PROGRAM)_atmega1280.hex
@@ -325,7 +327,7 @@ atmega1280: $(PROGRAM)_atmega1280.lst
 #
 atmega8: TARGET = atmega8
 atmega8: MCU_TARGET = atmega8
-atmega8: CFLAGS += $(COMMON_OPTIONS)
+atmega8: CXXFLAGS += $(COMMON_OPTIONS)
 atmega8: AVR_FREQ ?= 16000000L 
 atmega8: LDSECTIONS  = -Wl,--section-start=.text=0x1e00 -Wl,--section-start=.version=0x1ffe -Wl,--gc-sections -Wl,--undefined=optiboot_version
 atmega8: $(PROGRAM)_atmega8.hex
@@ -516,8 +518,8 @@ include Makefile.custom
 FORCE:
 
 baudcheck: FORCE
-	- @$(CC) --version
-	- @$(CC) $(CFLAGS) -E baudcheck.c -o baudcheck.tmp.sh
+	- @$(CXX) --version
+	- @$(CXX) $(CXXFLAGS) -E baudcheck.cpp -o baudcheck.tmp.sh
 	- @$(SH) baudcheck.tmp.sh
 
 isp: $(TARGET)
@@ -528,7 +530,7 @@ isp-stk500: $(PROGRAM)_$(TARGET).hex
 	$(STK500-2)
 
 %.elf: $(OBJ) baudcheck $(dummy)
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< $(LIBS)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $< $(LIBS)
 	$(SIZE) $@
 
 clean:
