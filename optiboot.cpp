@@ -846,33 +846,27 @@ void uartDelay() {
 #endif
 
 
+/***********************/
+/* find firmware file  */
+/***********************/
+bool find_firmware_data(uint32_t* fileDataBlock, uint32_t* fileSize, uint8_t cardType) {
 
-/*************************/
-/* find fat 16 partition */
-/*************************/
-bool find_fat16_partition(uint32_t* partitionStartBlock, uint8_t cardType) {
   
+  /* find fat 16 partition */
+  uint32_t partitionStartBlock;
+
   /* ckeck block 0 */
   SdCard_readBlock(0, buff, cardType);
   if( buff[FAT16_ID_POS + 3] == '1' && buff[FAT16_ID_POS + 4] == '6' ) { //Check "FAT16"
-    *partitionStartBlock = 0;
+    partitionStartBlock = 0;
   } else {
     /* read MBR to get the first partition and check again */
-    *partitionStartBlock = *(uint32_t*)&buff[MBR_FIRST_PART_POS + MBR_PART_LBA_POS];
-    SdCard_readBlock(*partitionStartBlock, buff, cardType);
+    partitionStartBlock = *(uint32_t*)&buff[MBR_FIRST_PART_POS + MBR_PART_LBA_POS];
+    SdCard_readBlock(partitionStartBlock, buff, cardType);
     if( buff[FAT16_ID_POS + 3] != '1' || buff[FAT16_ID_POS + 4] != '6' ) { //Check "FAT16"
       return false; //no partition found
     }
   }
-
-  return true;
-}
-
-
-/***********************/
-/* find firmware file  */
-/***********************/
-bool find_firmware_data(uint32_t partitionStartBlock, uint32_t* fileDataBlock, uint32_t* fileSize, uint8_t cardType) {
   
   /* read fat 16 parameters */
   uint8_t blocksPerCluster;
@@ -902,14 +896,16 @@ bool find_firmware_data(uint32_t partitionStartBlock, uint32_t* fileDataBlock, u
   while( data[0x00] != 0x00 ) {
 
     /* check filename  */
-    int i;
     bool entryFilenameFound = true;
-    for( i = 0; i<ROOT_ENTRY_FILENAME_SIZE; i++ ) {
-      if( data[i] != fileName[i] ) {
-	entryFilenameFound = false;
-	break;
-      }
-    }
+    if( data[0] != 'F' ||
+	data[1] != 'I' ||
+	data[2] != 'R' ||
+	data[3] != 'M' ||
+	data[8] != 'H' ||
+	data[9] != 'E' ||
+	data[10] != 'X' ) {      
+      entryFilenameFound = false;
+    }  
 
     if( entryFilenameFound ) {
       break;
@@ -964,14 +960,9 @@ int sdcard_loader(void) {
   }
 
   /* try to find firmware data */
-  uint32_t partitionStartBlock;
-  if( ! find_fat16_partition(&partitionStartBlock, cardType) ) {
-    return -1;
-  }
-
   uint32_t fileDataBlock;
   uint32_t fileSize;
-  if( ! find_firmware_data(partitionStartBlock, &fileDataBlock, &fileSize, cardType) ) {
+  if( ! find_firmware_data(&fileDataBlock, &fileSize, cardType) ) {
     return -1;
   }
 
