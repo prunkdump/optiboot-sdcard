@@ -121,7 +121,7 @@ STK500-2 = $(STK500) -d$(MCU_TARGET) -ms -q -lCF -LCF -cUSB -I200kHz -s -wt
 # End of build environment code.
 
 
-OBJ        = $(PROGRAM).o
+OBJ        = $(PROGRAM).o mSPI.o SdCard.o
 OPTIMIZE = -Os -fno-split-wide-types -mrelax
 
 DEFS       = 
@@ -130,7 +130,7 @@ DEFS       =
 # platforms support EEPROM and large bootloaders need the eeprom functions that
 # are defined in libc, even though we explicity remove it with -nostdlib because
 # of the space-savings.
-LIBS       =  -lc
+LIBS       =  -lc -lgcc
 
 CC         = $(GCCROOT)avr-gcc
 CXX        = $(GCCROOT)avr-g++
@@ -530,7 +530,7 @@ isp-stk500: $(PROGRAM)_$(TARGET).hex
 	$(STK500-2)
 
 %.elf: $(OBJ) baudcheck $(dummy)
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $< $(LIBS)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
 	$(SIZE) $@
 
 clean:

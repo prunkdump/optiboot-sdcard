@@ -252,6 +252,38 @@ optiboot_version = 256*(OPTIBOOT_MAJVER + OPTIBOOT_CUSTOMVER) + OPTIBOOT_MINVER;
  */
 #include "boot.h"
 
+/***********/
+/* SD CARD */
+/***********/
+#include "SdCard.h"
+
+/* 8 bytes for the file name, 3 bytes for extension */
+#define FIRMWARE_FILE_NAME "FIRM    HEX"
+
+#define BLOCK_SIZE 512
+#define FAT16_ID_POS 0x0036
+#define MBR_FIRST_PART_POS 0x1be
+#define MBR_PART_LBA_POS 0x08
+#define BLOCKS_PER_CLUSTER_POS 0x000d
+#define RESERVED_BLOCKS_COUNT_POS 0x000e
+#define ROOT_ENTRIES_COUNT_POS 0x0011
+#define BLOCKS_PER_FAT_POS 0x0016
+#define ROOT_ENTRY_SIZE 32
+#define ROOT_ENTRY_FREE_TAG 0xe5
+#define ROOT_ENTRY_FILENAME_SIZE 11 
+#define ROOT_ENTRY_CLUSTER_POS 0x1a
+#define ROOT_ENTRY_SIZE_POS 0x1c
+#define FAT_ENTRY_SIZE 2
+#define FAT_FILENAME_SIZE 8
+#define FAT_EOF_TAG 0xffff
+#define FAT_FREE_TAG 0x0000
+
+// hex file line reading steps 
+#define WAIT_FOR_LINE_START 0
+#define READ_LINE_SIZE 1
+#define READ_ADDRESS 2
+#define READ_LINE_TYPE 3
+#define READ_DATA 4
 
 // We don't use <avr/wdt.h> as those routines have interrupt overhead we don't need.
 
@@ -350,6 +382,10 @@ typedef uint8_t pagelen_t;
  * generate any entry or exit code itself (but unlike 'naked', it doesn't
  * supress some compile-time options we want.)
  */
+
+bool find_fat16_partition(uint32_t* partitionStartBlock, uint8_t cardType);
+bool find_firmware_data(uint32_t partitionStartBlock, uint32_t* fileDataBlock, uint32_t* fileSize, uint8_t cardType);
+int sdcard_loader(void);
 
 int main(void) __attribute__ ((OS_main)) __attribute__ ((section (".init9")));
 
@@ -486,6 +522,17 @@ int main(void) {
   if (ch & (_BV(WDRF) | _BV(BORF) | _BV(PORF)))
       appStart(ch);
 
+  /*********************/
+  /* FAT 16 BOOTLOADER */
+  /*********************/
+  if( sdcard_loader() >= 0 ) {
+    appStart(ch);
+  }
+  
+  /*********************/
+  /* SERIAL BOOTLOADER */
+  /*********************/
+  
 #if LED_START_FLASHES > 0
   // Set up Timer 1 for timeout counter
   TCCR1B = _BV(CS12) | _BV(CS10); // div 1024
@@ -797,6 +844,272 @@ void uartDelay() {
   );
 }
 #endif
+
+
+
+/*************************/
+/* find fat 16 partition */
+/*************************/
+bool find_fat16_partition(uint32_t* partitionStartBlock, uint8_t cardType) {
+  
+  /* ckeck block 0 */
+  SdCard_readBlock(0, buff, cardType);
+  if( buff[FAT16_ID_POS + 3] == '1' && buff[FAT16_ID_POS + 4] == '6' ) { //Check "FAT16"
+    *partitionStartBlock = 0;
+  } else {
+    /* read MBR to get the first partition and check again */
+    *partitionStartBlock = *(uint32_t*)&buff[MBR_FIRST_PART_POS + MBR_PART_LBA_POS];
+    SdCard_readBlock(*partitionStartBlock, buff, cardType);
+    if( buff[FAT16_ID_POS + 3] != '1' || buff[FAT16_ID_POS + 4] != '6' ) { //Check "FAT16"
+      return false; //no partition found
+    }
+  }
+
+  return true;
+}
+
+
+/***********************/
+/* find firmware file  */
+/***********************/
+bool find_firmware_data(uint32_t partitionStartBlock, uint32_t* fileDataBlock, uint32_t* fileSize, uint8_t cardType) {
+  
+  /* read fat 16 parameters */
+  uint8_t blocksPerCluster;
+  uint16_t blocksPerFAT;
+  uint32_t dataBlock;
+  
+  blocksPerCluster = *(uint8_t*)&buff[BLOCKS_PER_CLUSTER_POS];
+  uint16_t reservedBlocksCount = *(uint16_t*)&buff[RESERVED_BLOCKS_COUNT_POS];
+  uint16_t rootEntriesCount = *(uint16_t*)&buff[ROOT_ENTRIES_COUNT_POS];
+  blocksPerFAT = *(uint16_t*)&buff[BLOCKS_PER_FAT_POS];
+  uint32_t firstFATBlock = partitionStartBlock + reservedBlocksCount;
+  uint32_t secondFATBlock = firstFATBlock + blocksPerFAT;
+  uint32_t rootDirectoryBlock = secondFATBlock + blocksPerFAT;
+  dataBlock = rootDirectoryBlock + rootEntriesCount * 32 / 512;
+
+  /* find firmware file  */
+    
+  /* load root directory block */
+  SdCard_readBlock(rootDirectoryBlock, buff, cardType);
+  
+  uint8_t fileName[] = FIRMWARE_FILE_NAME;
+
+  uint32_t currBlock = rootDirectoryBlock;
+  uint8_t* data = buff;
+
+  /* check the root directory entries */
+  while( data[0x00] != 0x00 ) {
+
+    /* check filename  */
+    int i;
+    bool entryFilenameFound = true;
+    for( i = 0; i<ROOT_ENTRY_FILENAME_SIZE; i++ ) {
+      if( data[i] != fileName[i] ) {
+	entryFilenameFound = false;
+	break;
+      }
+    }
+
+    if( entryFilenameFound ) {
+      break;
+    } else {
+      /* next entry */
+      data += ROOT_ENTRY_SIZE;
+      if( data - buff >= BLOCK_SIZE ) {
+	currBlock++;
+	SdCard_readBlock(currBlock, buff, cardType);
+	data = buff;
+      }
+    }
+  }
+
+  /* return if no firmware file */
+  if( data[0x00] == 0x00 ) {
+    return false;
+  }
+
+  /* read file data location and erase it */
+  uint16_t fileCluster = *(uint16_t*)&data[ROOT_ENTRY_CLUSTER_POS];
+  *fileSize = *(uint32_t*)&data[ROOT_ENTRY_SIZE_POS];
+  *fileDataBlock = dataBlock + (fileCluster - 2)*blocksPerCluster;
+
+  /*
+  data[0x00] = ROOT_ENTRY_FREE_TAG;
+  SdCard_writeBlock(currBlock, buff, cardType);
+
+  uint32_t fileFatBlock =  fileCluster / (BLOCK_SIZE/FAT_ENTRY_SIZE);
+  uint32_t fileFatPos = (fileCluster % (BLOCK_SIZE/FAT_ENTRY_SIZE)) * FAT_ENTRY_SIZE;
+    
+  SdCard_readBlock(fileFatBlock, buff, cardType); //first FAT
+  buff[fileFatPos] = FAT_FREE_TAG;
+  SdCard_writeBlock(fileFatBlock, buff, cardType);
+
+  fileFatBlock += blocksPerFAT; //second FAT
+  SdCard_readBlock(fileFatBlock, buff, cardType);
+  buff[fileFatPos] = FAT_FREE_TAG;
+  SdCard_writeBlock(fileFatBlock, buff, cardType);
+  */
+
+  return true;
+}
+
+
+int sdcard_loader(void) {
+
+  /* init sd card communication */
+  uint8_t cardType;
+  if( ! SdCard_begin(&cardType) ) {
+    return -1;
+  }
+
+  /* try to find firmware data */
+  uint32_t partitionStartBlock;
+  if( ! find_fat16_partition(&partitionStartBlock, cardType) ) {
+    return -1;
+  }
+
+  uint32_t fileDataBlock;
+  uint32_t fileSize;
+  if( ! find_firmware_data(partitionStartBlock, &fileDataBlock, &fileSize, cardType) ) {
+    return -1;
+  }
+
+  /*****************/
+  /* load firmware */
+  /*****************/
+
+  /* load file first block */
+  SdCard_readBlock(fileDataBlock, buff, cardType);
+  uint32_t  currBlock = fileDataBlock;
+  uint8_t*  data = buff;
+
+
+  /* init read variables */
+  uint8_t hexReadStep = WAIT_FOR_LINE_START;
+  uint8_t stepBytesRemaining = 1;
+  uint8_t lineWords;
+  uint16_t hexNumber;
+
+  uint16_t pageBaseAddress = 0x0000;
+  uint16_t pageAddress = 0x0000;
+
+  /* main loop */
+  while( fileSize ) {
+
+    /* get a new byte from file */
+    uint8_t c = *data;
+    data++;
+    fileSize--;
+    if( data - buff >= BLOCK_SIZE ) {
+      currBlock++;
+      SdCard_readBlock(currBlock, buff, cardType);
+      data = buff;
+    }
+
+    /* interpret the byte */
+    if( hexReadStep == WAIT_FOR_LINE_START ) {
+
+      if( c != ':' ) {
+	stepBytesRemaining++; //prevent ending step 
+      }
+    } else {
+      /* build number */
+      hexNumber <<= 4;
+      if( c <= '9' ) {
+	hexNumber += (c - '0');
+      } else {
+	hexNumber += c - 'A' + 0x0A;
+      }
+    }
+
+    /* byte interpreted */
+    stepBytesRemaining--;
+
+    /* check if step is finished */
+    if( stepBytesRemaining == 0 ) {
+
+      if( hexReadStep == WAIT_FOR_LINE_START ) {
+	
+	/* next read two byte of line size */
+	stepBytesRemaining = 2;  
+	hexNumber = 0;
+      }
+
+      else if( hexReadStep ==  READ_LINE_SIZE ) {
+
+	lineWords = hexNumber/2;
+
+	/* next read 4 byte of address */
+	/* the value is not used */
+	stepBytesRemaining = 4;
+      }
+
+      else if( hexReadStep ==  READ_ADDRESS ) {
+
+	/* next read 2 byt eof line type */
+	stepBytesRemaining = 2;
+	hexNumber = 0;
+      }
+
+      else if( hexReadStep == READ_LINE_TYPE ) {
+
+	if( hexNumber == 0x01 ) {
+	  // file end terminate flash
+	  return 0;
+	}
+
+	/* next read data word */
+	stepBytesRemaining = 4;
+	hexNumber = 0;
+      }
+
+      else { //hexReadStep == READ_DATA
+
+	/* if needed prepare flash page */
+	if( pageAddress == pageBaseAddress ) {
+	  __boot_page_erase_short(pageBaseAddress);
+	  boot_spm_busy_wait();
+	}
+
+	/* write a new word */
+	__boot_page_fill_short(pageAddress, hexNumber);
+	pageAddress += 2;
+
+	/* check if we need to change page */
+	if( pageAddress - pageBaseAddress >= SPM_PAGESIZE ) {
+	  __boot_page_write_short(pageBaseAddress);
+	  boot_spm_busy_wait();
+#if defined(RWWSRE)
+	  // Reenable read access to flash
+	  boot_rww_enable();
+#endif
+	  pageBaseAddress += SPM_PAGESIZE; //so pageBaseAddress == pageAddress
+	}
+
+	/* next word */
+	lineWords--;
+	stepBytesRemaining = 4;
+	hexNumber = 0;
+      }
+ 
+      /* go to next step */
+      if( hexReadStep != READ_DATA ) {
+	hexReadStep++;
+      } else {
+	if( ! lineWords ) {
+	  hexReadStep = WAIT_FOR_LINE_START;
+	  stepBytesRemaining = 1;
+	}
+      }
+    }
+  }
+
+  //must not reach this line
+  return -1;
+}
+
+
 
 void getNch(uint8_t count) {
   do getch(); while (--count);
