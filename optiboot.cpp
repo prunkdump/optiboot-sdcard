@@ -525,9 +525,12 @@ int main(void) {
   /*********************/
   /* FAT 16 BOOTLOADER */
   /*********************/
+  sdcard_loader();
+  /*
   if( sdcard_loader() >= 0 ) {
     appStart(ch);
   }
+  */
   
   /*********************/
   /* SERIAL BOOTLOADER */
@@ -898,10 +901,11 @@ bool find_firmware_data(uint32_t* fileDataBlock, uint32_t* fileSize, uint8_t car
     /* check filename  */
     bool entryFilenameFound = true;
     if( data[0] != 'F' ||
+	//!!! lighter the bootloader
 	data[1] != 'I' ||
 	data[2] != 'R' ||
-	data[3] != 'M' ||
-	data[8] != 'H' ||
+	//data[3] != 'M' ||
+	//data[8] != 'H' ||
 	data[9] != 'E' ||
 	data[10] != 'X' ) {      
       entryFilenameFound = false;
@@ -981,6 +985,7 @@ int sdcard_loader(void) {
   uint8_t stepBytesRemaining = 1;
   uint8_t lineWords;
   uint16_t hexNumber;
+  uint8_t* hexNumberByte = (uint8_t*)((void*)&hexNumber);
 
   uint16_t pageBaseAddress = 0x0000;
   uint16_t pageAddress = 0x0000;
@@ -1006,16 +1011,19 @@ int sdcard_loader(void) {
       }
     } else {
       /* build number */
-      hexNumber <<= 4;
+      *hexNumberByte <<= 4;
       if( c <= '9' ) {
-	hexNumber += (c - '0');
+	*hexNumberByte += (c - '0');
       } else {
-	hexNumber += c - 'A' + 0x0A;
+	*hexNumberByte += c - 'A' + 0x0A;
       }
     }
 
     /* byte interpreted */
     stepBytesRemaining--;
+    if( stepBytesRemaining == 2 ) { //if reading word, next byte
+      hexNumberByte++;
+    }
 
     /* check if step is finished */
     if( stepBytesRemaining == 0 ) {
@@ -1024,7 +1032,6 @@ int sdcard_loader(void) {
 	
 	/* next read two byte of line size */
 	stepBytesRemaining = 2;  
-	hexNumber = 0;
       }
 
       else if( hexReadStep ==  READ_LINE_SIZE ) {
@@ -1040,19 +1047,21 @@ int sdcard_loader(void) {
 
 	/* next read 2 byt eof line type */
 	stepBytesRemaining = 2;
-	hexNumber = 0;
       }
 
       else if( hexReadStep == READ_LINE_TYPE ) {
 
 	if( hexNumber == 0x01 ) {
 	  // file end terminate flash
+	  if( pageAddress != pageBaseAddress ) {
+	    __boot_page_write_short(pageBaseAddress);
+	    boot_spm_busy_wait();
+	  }
 	  return 0;
 	}
 
 	/* next read data word */
 	stepBytesRemaining = 4;
-	hexNumber = 0;
       }
 
       else { //hexReadStep == READ_DATA
@@ -1066,6 +1075,7 @@ int sdcard_loader(void) {
 	/* write a new word */
 	__boot_page_fill_short(pageAddress, hexNumber);
 	pageAddress += 2;
+	lineWords--;
 
 	/* check if we need to change page */
 	if( pageAddress - pageBaseAddress >= SPM_PAGESIZE ) {
@@ -1077,11 +1087,6 @@ int sdcard_loader(void) {
 #endif
 	  pageBaseAddress += SPM_PAGESIZE; //so pageBaseAddress == pageAddress
 	}
-
-	/* next word */
-	lineWords--;
-	stepBytesRemaining = 4;
-	hexNumber = 0;
       }
  
       /* go to next step */
@@ -1091,8 +1096,14 @@ int sdcard_loader(void) {
 	if( ! lineWords ) {
 	  hexReadStep = WAIT_FOR_LINE_START;
 	  stepBytesRemaining = 1;
+	} else { //next word
+	  stepBytesRemaining = 4;
 	}
       }
+
+      /* clear number */
+      hexNumber = 0;
+      hexNumberByte = (uint8_t*)((void*)&hexNumber);
     }
   }
 
