@@ -903,7 +903,7 @@ bool find_firmware_data(uint32_t* fileDataBlock, uint32_t* fileSize, uint8_t car
     if( data[0] != 'F' ||
 	//!!! lighter the bootloader
 	data[1] != 'I' ||
-	data[2] != 'R' ||
+	//data[2] != 'R' ||
 	//data[3] != 'M' ||
 	//data[8] != 'H' ||
 	data[9] != 'E' ||
@@ -955,6 +955,15 @@ bool find_firmware_data(uint32_t* fileDataBlock, uint32_t* fileSize, uint8_t car
 }
 
 
+void write_page(uint16_t address) {
+  __boot_page_write_short(address);
+  boot_spm_busy_wait();
+#if defined(RWWSRE)
+  // Reenable read access to flash
+  boot_rww_enable();
+#endif
+}
+  
 int sdcard_loader(void) {
 
   /* init sd card communication */
@@ -1054,8 +1063,7 @@ int sdcard_loader(void) {
 	if( hexNumber == 0x01 ) {
 	  // file end terminate flash
 	  if( pageAddress != pageBaseAddress ) {
-	    __boot_page_write_short(pageBaseAddress);
-	    boot_spm_busy_wait();
+	    write_page(pageBaseAddress);
 	  }
 	  return 0;
 	}
@@ -1079,12 +1087,7 @@ int sdcard_loader(void) {
 
 	/* check if we need to change page */
 	if( pageAddress - pageBaseAddress >= SPM_PAGESIZE ) {
-	  __boot_page_write_short(pageBaseAddress);
-	  boot_spm_busy_wait();
-#if defined(RWWSRE)
-	  // Reenable read access to flash
-	  boot_rww_enable();
-#endif
+	  write_page(pageBaseAddress);
 	  pageBaseAddress += SPM_PAGESIZE; //so pageBaseAddress == pageAddress
 	}
       }
