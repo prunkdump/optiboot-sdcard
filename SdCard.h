@@ -126,8 +126,9 @@
 
 //------------------------------------------------------------------------------
 
-bool SdCard_begin(uint8_t* cardType);
-bool SdCard_readBlock(uint32_t block, uint8_t* dst, uint8_t cardType);
-bool SdCard_writeBlock(uint32_t block, const uint8_t* src, uint8_t cardType);
+/* return card type */
+uint8_t SdCard_begin();
+bool SdCard_readBlock(uint32_t block, uint8_t cardType);
+bool SdCard_writeBlock(uint32_t block, uint8_t cardType);
 
 #endif  // SdCard_h

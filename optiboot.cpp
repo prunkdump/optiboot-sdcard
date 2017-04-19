@@ -849,50 +849,74 @@ void uartDelay() {
 #endif
 
 
+
+/******************/
+/* sd card loader */
+/******************/
+
+struct FatFileDesc {
+  
+  uint32_t firstFatBlock;
+  uint32_t dataBlock;
+  uint8_t blocksPerCluster;
+};
+
+
 /***********************/
 /* find firmware file  */
 /***********************/
-bool find_firmware_data(uint32_t* fileDataBlock, uint32_t* fileSize, uint8_t cardType) {
 
+bool fatTagFound(void) {
+
+  //if( buff[FAT16_ID_POS + 3] == '1' && buff[FAT16_ID_POS + 4] == '6' ) { //Check "FAT16"
+  if( buff[FAT16_ID_POS + 4] == '6' ) {
+    return true;
+  }
+
+   return false;
+}
+
+
+/* return pointer to the file root directory entry or pointer to root directory end */
+uint8_t* find_firmware_data(FatFileDesc* fat, uint8_t cardType) {
   
   /* find fat 16 partition */
   uint32_t partitionStartBlock;
-
+  
   /* ckeck block 0 */
-  SdCard_readBlock(0, buff, cardType);
-  if( buff[FAT16_ID_POS + 3] == '1' && buff[FAT16_ID_POS + 4] == '6' ) { //Check "FAT16"
+  SdCard_readBlock(0, cardType);
+
+  if( fatTagFound() ) { //Check "FAT16"
     partitionStartBlock = 0;
   } else {
     /* read MBR to get the first partition and check again */
     partitionStartBlock = *(uint32_t*)&buff[MBR_FIRST_PART_POS + MBR_PART_LBA_POS];
-    SdCard_readBlock(partitionStartBlock, buff, cardType);
-    if( buff[FAT16_ID_POS + 3] != '1' || buff[FAT16_ID_POS + 4] != '6' ) { //Check "FAT16"
-      return false; //no partition found
+    SdCard_readBlock(partitionStartBlock, cardType);
+    if( ! fatTagFound() ) { //Check "FAT16"
+      return NULL; //no partition found
     }
   }
   
   /* read fat 16 parameters */
-  uint8_t blocksPerCluster;
-  uint16_t blocksPerFAT;
-  uint32_t dataBlock;
+  fat->blocksPerCluster = *(uint8_t*)&buff[BLOCKS_PER_CLUSTER_POS];
   
-  blocksPerCluster = *(uint8_t*)&buff[BLOCKS_PER_CLUSTER_POS];
   uint16_t reservedBlocksCount = *(uint16_t*)&buff[RESERVED_BLOCKS_COUNT_POS];
+  partitionStartBlock += reservedBlocksCount;
+  fat->firstFatBlock = partitionStartBlock;
+
+  uint16_t blocksPerFAT = *(uint16_t*)&buff[BLOCKS_PER_FAT_POS];
+  partitionStartBlock += 2*blocksPerFAT;
+  uint32_t rootDirectoryBlock = partitionStartBlock;
+
   uint16_t rootEntriesCount = *(uint16_t*)&buff[ROOT_ENTRIES_COUNT_POS];
-  blocksPerFAT = *(uint16_t*)&buff[BLOCKS_PER_FAT_POS];
-  uint32_t firstFATBlock = partitionStartBlock + reservedBlocksCount;
-  uint32_t secondFATBlock = firstFATBlock + blocksPerFAT;
-  uint32_t rootDirectoryBlock = secondFATBlock + blocksPerFAT;
-  dataBlock = rootDirectoryBlock + rootEntriesCount * 32 / 512;
+  partitionStartBlock += rootEntriesCount * ROOT_ENTRY_SIZE / BLOCK_SIZE;
+  fat->dataBlock = partitionStartBlock;
 
   /* find firmware file  */
     
   /* load root directory block */
-  SdCard_readBlock(rootDirectoryBlock, buff, cardType);
-  
-  uint8_t fileName[] = FIRMWARE_FILE_NAME;
-
-  uint32_t currBlock = rootDirectoryBlock;
+  SdCard_readBlock(rootDirectoryBlock, cardType);
+ 
   uint8_t* data = buff;
 
   /* check the root directory entries */
@@ -901,12 +925,11 @@ bool find_firmware_data(uint32_t* fileDataBlock, uint32_t* fileSize, uint8_t car
     /* check filename  */
     bool entryFilenameFound = true;
     if( data[0] != 'F' ||
-	//!!! lighter the bootloader
-	data[1] != 'I' ||
+	//data[1] != 'I' ||
 	//data[2] != 'R' ||
 	//data[3] != 'M' ||
 	//data[8] != 'H' ||
-	data[9] != 'E' ||
+	//data[9] != 'E' ||
 	data[10] != 'X' ) {      
       entryFilenameFound = false;
     }  
@@ -916,44 +939,21 @@ bool find_firmware_data(uint32_t* fileDataBlock, uint32_t* fileSize, uint8_t car
     } else {
       /* next entry */
       data += ROOT_ENTRY_SIZE;
-      if( data - buff >= BLOCK_SIZE ) {
-	currBlock++;
-	SdCard_readBlock(currBlock, buff, cardType);
+      if( data >= buff + BLOCK_SIZE ) {
+	rootDirectoryBlock++;
+	SdCard_readBlock(rootDirectoryBlock, cardType);
 	data = buff;
       }
     }
   }
 
-  /* return if no firmware file */
   if( data[0x00] == 0x00 ) {
-    return false;
+    return NULL;
   }
 
-  /* read file data location and erase it */
-  uint16_t fileCluster = *(uint16_t*)&data[ROOT_ENTRY_CLUSTER_POS];
-  *fileSize = *(uint32_t*)&data[ROOT_ENTRY_SIZE_POS];
-  *fileDataBlock = dataBlock + (fileCluster - 2)*blocksPerCluster;
-
-  /*
-  data[0x00] = ROOT_ENTRY_FREE_TAG;
-  SdCard_writeBlock(currBlock, buff, cardType);
-
-  uint32_t fileFatBlock =  fileCluster / (BLOCK_SIZE/FAT_ENTRY_SIZE);
-  uint32_t fileFatPos = (fileCluster % (BLOCK_SIZE/FAT_ENTRY_SIZE)) * FAT_ENTRY_SIZE;
-    
-  SdCard_readBlock(fileFatBlock, buff, cardType); //first FAT
-  buff[fileFatPos] = FAT_FREE_TAG;
-  SdCard_writeBlock(fileFatBlock, buff, cardType);
-
-  fileFatBlock += blocksPerFAT; //second FAT
-  SdCard_readBlock(fileFatBlock, buff, cardType);
-  buff[fileFatPos] = FAT_FREE_TAG;
-  SdCard_writeBlock(fileFatBlock, buff, cardType);
-  */
-
-  return true;
+  return data;
 }
-
+    
 
 void write_page(uint16_t address) {
   __boot_page_write_short(address);
@@ -963,32 +963,33 @@ void write_page(uint16_t address) {
   boot_rww_enable();
 #endif
 }
-  
+
+
 int sdcard_loader(void) {
 
   /* init sd card communication */
-  uint8_t cardType;
-  if( ! SdCard_begin(&cardType) ) {
+  uint8_t cardType = SdCard_begin();
+  if( ! cardType ) {
     return -1;
   }
 
   /* try to find firmware data */
-  uint32_t fileDataBlock;
-  uint32_t fileSize;
-  if( ! find_firmware_data(&fileDataBlock, &fileSize, cardType) ) {
-    return -1;
+  FatFileDesc fat;
+  uint8_t* fileEntry = find_firmware_data(&fat, cardType);
+  if( ! fileEntry ) {
+    return -1; //no file found
   }
 
   /*****************/
   /* load firmware */
   /*****************/
 
-  /* load file first block */
-  SdCard_readBlock(fileDataBlock, buff, cardType);
-  uint32_t  currBlock = fileDataBlock;
-  uint8_t*  data = buff;
-
-
+  uint8_t* data = buff;
+  uint16_t fileCluster =  *(uint16_t*)&fileEntry[ROOT_ENTRY_CLUSTER_POS];
+  uint8_t blocksReadInCluster = 0;
+  uint32_t fileSize = *(uint32_t*)&fileEntry[ROOT_ENTRY_SIZE_POS];
+  uint32_t currentBlock = fat.dataBlock + (fileCluster - 2)*fat.blocksPerCluster;
+  
   /* init read variables */
   uint8_t hexReadStep = WAIT_FOR_LINE_START;
   uint8_t stepBytesRemaining = 1;
@@ -999,19 +1000,46 @@ int sdcard_loader(void) {
   uint16_t pageBaseAddress = 0x0000;
   uint16_t pageAddress = 0x0000;
 
+  /* load the start of file */
+  SdCard_readBlock(currentBlock, cardType);
+
   /* main loop */
   while( fileSize ) {
 
     /* get a new byte from file */
     uint8_t c = *data;
-    data++;
     fileSize--;
-    if( data - buff >= BLOCK_SIZE ) {
-      currBlock++;
-      SdCard_readBlock(currBlock, buff, cardType);
+
+    /* update pointer */
+    data++;
+
+    /* need to change block ? */
+    if( data >= buff + BLOCK_SIZE ) {
+      currentBlock++;
+      blocksReadInCluster++;
+
+      /* need to change cluster ? */
+      if( blocksReadInCluster >= fat.blocksPerCluster ) {
+	
+	/* next cluster */
+	blocksReadInCluster = 0;
+	//uint32_t fileFatBlock =  fileCluster / (BLOCK_SIZE/FAT_ENTRY_SIZE);
+	//uint16_t fileFatPos = (fileCluster % (BLOCK_SIZE/FAT_ENTRY_SIZE)) * FAT_ENTRY_SIZE;
+	//uint16_t fatEntryAdress = fileCluster * 2;
+	//uint16_t fatEntryBlocks = fatEntryAdress/BLOCK_SIZE;
+	//uint16_t fatEntryPos = fatEntryAdress - fatEntryAdress*BLOCK_SIZE;  //rem without gcc library
+	uint16_t fatEntryBlocks = fileCluster >> 8;
+	uint16_t fatEntryPos = fileCluster % 256;
+	
+	SdCard_readBlock(fat.firstFatBlock + fatEntryBlocks, cardType);
+	fileCluster = ((uint16_t*)buff)[fatEntryPos];
+	currentBlock = fat.dataBlock + (fileCluster - 2)*fat.blocksPerCluster;
+      }
+      
+      SdCard_readBlock(currentBlock, cardType);
       data = buff;
     }
-
+    
     /* interpret the byte */
     if( hexReadStep == WAIT_FOR_LINE_START ) {
 

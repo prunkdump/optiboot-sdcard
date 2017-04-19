@@ -27,6 +27,31 @@
 #include "Fat16Config.h"
 #include "mSPI.h"
 
+
+/*
+ * RAMSTART should be self-explanatory.  It's bigger on parts with a
+ * lot of peripheral registers.  Let 0x100 be the default
+ * Note that RAMSTART (for optiboot) need not be exactly at the start of RAM.
+ */
+#if !defined(RAMSTART)  // newer versions of gcc avr-libc define RAMSTART
+#define RAMSTART 0x100
+#if defined (__AVR_ATmega644P__)
+// correct for a bug in avr-libc
+#undef SIGNATURE_2
+#define SIGNATURE_2 0x0A
+#elif defined(__AVR_ATmega1280__)
+#undef RAMSTART
+#define RAMSTART (0x200)
+#endif
+#endif
+
+/* C zero initialises all global variables. However, that requires */
+/* These definitions are NOT zero initialised, but that doesn't matter */
+/* This allows us to drop the zero init code, saving us memory */
+#define buff    ((uint8_t*)(RAMSTART))
+
+
+
 //------------------------------------------------------------------------------
 #if 0//////////////////////////////////////////////////////////////////////////////////////////////////
 // r1 status values
@@ -106,11 +131,12 @@ uint8_t cardAcmd(uint8_t cmd, uint32_t arg) {
   return cardCommand(cmd, arg);
 }
 
-bool SdCard_begin(uint8_t* cardType) {
+uint8_t SdCard_begin(void) {
 
   uint8_t status;
   uint32_t arg;
   uint16_t count;
+  uint8_t cardType;
 
   // initialize chip select pin.
   SD_SS_DDR_REG |= _BV(SD_SS_PIN); //OUTPUT 
@@ -146,14 +172,14 @@ bool SdCard_begin(uint8_t* cardType) {
   while (1) {
     count++;
     if (cardCommand(CMD8, 0x1AA) == (R1_ILLEGAL_COMMAND | R1_IDLE_STATE)) {
-      *cardType = CARD_TYPE_SDV1;
+      cardType = CARD_TYPE_SDV1;
       break;
     }
     for (uint8_t i = 0; i < 4; i++) {
       status = SPI_transfer(0xff);
     }
     if (status == 0XAA) {
-      *cardType = CARD_TYPE_SDV2;
+      cardType = CARD_TYPE_SDV2;
       break;
     }
     if ( count > SD_MAX_COMMANDS ) {
@@ -163,7 +189,7 @@ bool SdCard_begin(uint8_t* cardType) {
 
     
   // initialize card and send host supports SDHC if SD2
-  arg = *cardType == CARD_TYPE_SDV2 ? 0X40000000 : 0;
+  arg = cardType == CARD_TYPE_SDV2 ? 0X40000000 : 0;
 
   count = 0;
   while (cardAcmd(ACMD41, arg) != R1_READY_STATE) {
@@ -175,12 +201,12 @@ bool SdCard_begin(uint8_t* cardType) {
   }
     
   // if SD2 read OCR register to check for SDHC card
-  if (*cardType == CARD_TYPE_SDV2) {
+  if (cardType == CARD_TYPE_SDV2) {
     if (cardCommand(CMD58, 0)) {
       goto fail;
     }
     if ((SPI_transfer(0xff) & 0XC0) == 0XC0) {
-      *cardType = CARD_TYPE_SDHC;
+      cardType = CARD_TYPE_SDHC;
     }
     // Discard rest of ocr - contains allowed voltage range.
     for (uint8_t i = 0; i < 3; i++) {
@@ -192,11 +218,11 @@ bool SdCard_begin(uint8_t* cardType) {
 
   /* restore SPI clock */
   SPCR = save_SPCR;
-  return true;
+  return cardType;
 
  fail:
   chipSelectHigh();
-  return false;
+  return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -208,7 +234,7 @@ bool SdCard_begin(uint8_t* cardType) {
  * \return The value one, true, is returned for success and
  * the value zero, false, is returned for failure.
  */
-bool SdCard_readBlock(uint32_t blockNumber, uint8_t* dst, uint8_t cardType) {
+bool SdCard_readBlock(uint32_t blockNumber, uint8_t cardType) {
 
   uint8_t status;
   uint16_t count;
@@ -237,7 +263,7 @@ bool SdCard_readBlock(uint32_t blockNumber, uint8_t* dst, uint8_t cardType) {
   }
   // transfer data
   for (uint16_t i = 0; i < 512; i++) {
-    dst[i] = SPI_transfer(0XFF);
+    buff[i] = SPI_transfer(0XFF);
   }
   
   // discard crc
@@ -261,7 +287,7 @@ fail:
  * \return The value one, true, is returned for success and
  * the value zero, false, is returned for failure.
  */
-bool SdCard_writeBlock(uint32_t blockNumber, const uint8_t* src, uint8_t cardType) {
+bool SdCard_writeBlock(uint32_t blockNumber, uint8_t cardType) {
 
   uint8_t status;
   
@@ -281,7 +307,7 @@ bool SdCard_writeBlock(uint32_t blockNumber, const uint8_t* src, uint8_t cardTyp
   
   SPI_transfer(DATA_START_BLOCK);
   for (uint16_t i = 0; i < 512; i++) {
-    SPI_transfer(src[i]);
+    SPI_transfer(buff[i]);
   }
   SPI_transfer(0xff);
   SPI_transfer(0xff);
