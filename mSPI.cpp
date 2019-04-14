@@ -18,16 +18,12 @@
 
 void SPI_begin(void) {
 
-  /* set hardware spi SS pin to output */
+  /* set hardware spi SS, SCK and MOSI pin to output */
   /* but do not set to high as it is not used */
-  DDRB |= _BV(2);
+  DDRB = _BV(2) | _BV(3) | _BV(5); //2 -> SS, 3 -> MOSI, 5 -> SCK
   
   /* enable SPI */
   SPCR = SPI_SPCR_CONFIG;
-
-  /* Set clock and MOSI to output */
-  DDRB |= _BV(5); //SCK
-  DDRB |= _BV(3); //MOSI
 }
  
 uint8_t SPI_transfer(uint8_t data) {

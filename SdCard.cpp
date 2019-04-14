@@ -69,12 +69,15 @@ uint8_t const DATA_RES_WRITE_ERROR = 0X0D;
 // stop compiler from inlining where speed optimization is not required
 //#define STATIC_NOINLINE static __attribute__((noinline))
 
+uint8_t spiReceive(void) {
+  
+  return SPI_transfer(0xff);
+}
 
-bool waitForToken(uint8_t token) {
+bool waitNotBusy(void) {
   uint16_t count = 0;
-  while (SPI_transfer(0xff) != token) {
-    count++;
-    if( count >= SD_MAX_TRANSFERTS ) return false;
+  while (spiReceive() != 0xff) {
+    if ( count >= SD_MAX_TRANSFERTS ) return false;
   }
   return true;
 }
@@ -82,7 +85,6 @@ bool waitForToken(uint8_t token) {
 void chipSelectHigh(void) {
   
   SD_SS_PORT_REG |= _BV(SD_SS_PIN);
-  SPI_transfer(0Xff);
 }
 
 void chipSelectLow(void) {
@@ -90,40 +92,34 @@ void chipSelectLow(void) {
   SD_SS_PORT_REG &= ! _BV(SD_SS_PIN);
 }
 
-
 uint8_t cardCommand(uint8_t cmd, uint32_t arg) {
 
-  // select card
-  chipSelectLow();
-  
-  // wait if busy
-  waitForToken(0xff);
+  /* wait not busy */
+  if (cmd != CMD0) {
+    waitNotBusy();
+  }
 
   // send command
   SPI_transfer(cmd | 0x40);
 
   // send argument
-  uint8_t *pa = (uint8_t *)(&arg);
+  uint8_t *pa = reinterpret_cast<uint8_t *>(&arg);
   for (int8_t i = 3; i >= 0; i--) {
     SPI_transfer(pa[i]);
   }
-  
+
   // send CRC - correct for CMD0 with arg zero or CMD8 with arg 0X1AA
   SPI_transfer(cmd == CMD0 ? 0X95 : 0X87);
 
-  // skip stuff byte for stop read
-  if (cmd == CMD12) {
-    SPI_transfer(0xff);
-  }
+  // discard first fill byte to avoid MISO pull-up problem.
+  spiReceive();
 
-  // wait for response
+  // there are 1-8 fill bytes before response.  fill bytes should be 0XFF.
   uint8_t status;
-  for (uint8_t i = 0; ((status = SPI_transfer(0xff)) & 0X80) && i != 0XFF; i++) {
+  for (uint8_t i = 0; ((status = spiReceive()) & 0X80) && i < 10; i++) {
   }
-  
   return status;
 }
-
 
 uint8_t cardAcmd(uint8_t cmd, uint32_t arg) {
   
@@ -131,71 +127,63 @@ uint8_t cardAcmd(uint8_t cmd, uint32_t arg) {
   return cardCommand(cmd, arg);
 }
 
+
+
 uint8_t SdCard_begin(void) {
 
   uint8_t status;
+
+  // 16-bit init start time allows over a minute
+  uint16_t count = 0;
   uint32_t arg;
-  uint16_t count;
   uint8_t cardType;
 
-  // initialize chip select pin.
-  SD_SS_DDR_REG |= _BV(SD_SS_PIN); //OUTPUT 
-  SD_SS_PORT_REG |= _BV(SD_SS_PIN); //HIGH
-
-  /* init SPI */
-  SPI_begin();
-
-  /* set slow SPI clock */
-  uint8_t save_SPCR = SPCR;
-  SPCR |= SPI_SCK_INIT_DIVISOR;
-
-  // toggle chip select 
-  chipSelectLow();
+  // initialize SPI bus and chip select pin.
+  DDRB = _BV(2) | _BV(3) | _BV(5); //SS, MOSI, SCK
+  SD_SS_DDR_REG |= _BV(SD_SS_PIN); //SD SS as OUTPUT
   chipSelectHigh();
 
+  // set SCK rate for initialization commands.
+  SPCR = SPI_SPCR_CONFIG | SPI_SCK_INIT_DIVISOR;
+  SPSR = 0x01; //enable SPI2X
+  chipSelectLow();
+  
   // must supply min of 74 clock cycles with CS high.
+  chipSelectHigh();
   for (uint8_t i = 0; i < 10; i++) {
-    SPI_transfer(0xff);
+    spiReceive();
   }
   
   // command to go idle in SPI mode
-  count = 0;
+  chipSelectLow();
   while (cardCommand(CMD0, 0) != R1_IDLE_STATE) {
     count++;
-    if( count > SD_MAX_COMMANDS ) {
+    if( count > SD_MAX_CMD0_TRIES ) {
       goto fail;
     }
   }
 
   // check SD version
-  count = 0;
-  while (1) {
-    count++;
-    if (cardCommand(CMD8, 0x1AA) == (R1_ILLEGAL_COMMAND | R1_IDLE_STATE)) {
-      cardType = CARD_TYPE_SDV1;
-      break;
-    }
+  if (cardCommand(CMD8, 0x1AA) == (R1_ILLEGAL_COMMAND | R1_IDLE_STATE)) {
+    cardType = CARD_TYPE_SDV1;
+  } else {
     for (uint8_t i = 0; i < 4; i++) {
-      status = SPI_transfer(0xff);
+      status = spiReceive();
     }
     if (status == 0XAA) {
       cardType = CARD_TYPE_SDV2;
-      break;
-    }
-    if ( count > SD_MAX_COMMANDS ) {
+    } else {
       goto fail;
     }
   }
 
-    
   // initialize card and send host supports SDHC if SD2
   arg = cardType == CARD_TYPE_SDV2 ? 0X40000000 : 0;
 
   count = 0;
   while (cardAcmd(ACMD41, arg) != R1_READY_STATE) {
     count++;
-    // check for timeout
-    if (count > SD_MAX_COMMANDS) {
+    if( count > SD_MAX_COMMANDS ) {
       goto fail;
     }
   }
@@ -205,25 +193,27 @@ uint8_t SdCard_begin(void) {
     if (cardCommand(CMD58, 0)) {
       goto fail;
     }
-    if ((SPI_transfer(0xff) & 0XC0) == 0XC0) {
+    if ((spiReceive() & 0XC0) == 0XC0) {
       cardType = CARD_TYPE_SDHC;
     }
     // Discard rest of ocr - contains allowed voltage range.
     for (uint8_t i = 0; i < 3; i++) {
-      SPI_transfer(0xff);
+      spiReceive();
     }
   }
-  
-  chipSelectHigh();
 
-  /* restore SPI clock */
-  SPCR = save_SPCR;
+  /* reset SPI clock */
+  SPCR = SPI_SPCR_CONFIG;
+  chipSelectHigh();
+  spiReceive();
   return cardType;
 
  fail:
   chipSelectHigh();
+  spiReceive();
   return 0;
 }
+
 
 //------------------------------------------------------------------------------
 /**
@@ -238,6 +228,9 @@ bool SdCard_readBlock(uint32_t blockNumber, uint8_t cardType) {
 
   uint8_t status;
   uint16_t count;
+
+  /* start SPI */
+  chipSelectLow();
   
   /* get block number */
   if (cardType != CARD_TYPE_SDHC) {
@@ -252,7 +245,7 @@ bool SdCard_readBlock(uint32_t blockNumber, uint8_t cardType) {
   /********/
   // wait for start block token
   count = 0;
-  while ((status = SPI_transfer(0xff)) == 0XFF) {
+  while ((status = spiReceive()) == 0XFF) {
     count++;
     if (count > SD_MAX_TRANSFERTS) {
       goto fail;
@@ -262,22 +255,25 @@ bool SdCard_readBlock(uint32_t blockNumber, uint8_t cardType) {
     goto fail;
   }
   // transfer data
-  for (uint16_t i = 0; i < 512; i++) {
-    buff[i] = SPI_transfer(0XFF);
+  for (int i = 0; i < 512; i++) {
+    buff[i] = spiReceive();
   }
   
   // discard crc
-  SPI_transfer(0XFF);
-  SPI_transfer(0XFF);
+  spiReceive();
+  spiReceive();
 
   // ok
   chipSelectHigh();
+  spiReceive();
   return true;
 
 fail:
   chipSelectHigh();
+  spiReceive();
   return false;
 }
+
 //------------------------------------------------------------------------------
 /**
  * Writes a 512 byte block to a storage device.
@@ -290,7 +286,10 @@ fail:
 bool SdCard_writeBlock(uint32_t blockNumber, uint8_t cardType) {
 
   uint8_t status;
-  
+ 
+  /* start SPI */
+  chipSelectLow();
+    
   /* set block number */
   if (cardType != CARD_TYPE_SDHC) {
     blockNumber <<= 9;
@@ -302,26 +301,37 @@ bool SdCard_writeBlock(uint32_t blockNumber, uint8_t cardType) {
   /*********/
   /* write */
   /*********/
-  SPI_transfer(0xff);
-  SPI_transfer(0xff);
-  
   SPI_transfer(DATA_START_BLOCK);
-  for (uint16_t i = 0; i < 512; i++) {
+  for (int i = 0; i < 512; i++) {
     SPI_transfer(buff[i]);
   }
-  SPI_transfer(0xff);
-  SPI_transfer(0xff);
-  
-  status = SPI_transfer(0xff);
+  spiReceive();
+  spiReceive();
+    
+  status = spiReceive();
   if ((status & DATA_RES_MASK) != DATA_RES_ACCEPTED) {
+    goto fail;
+  }
+
+  /**********************/
+  /* flush cache buffer */
+  /**********************/
+  if ( !waitNotBusy() ) {
+    goto fail;
+  }
+  
+  // response is r2 so get and check two bytes for nonzero
+  if (cardCommand(CMD13, 0) || spiReceive()) {
     goto fail;
   }
 
   // ok
   chipSelectHigh();
+  spiReceive();
   return true;
   
  fail:
   chipSelectHigh();
+  spiReceive();
   return false;
 }

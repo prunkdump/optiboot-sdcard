@@ -47,15 +47,16 @@
 #define SD_SS_PORT_REG PORTC
 #define SD_SS_DDR_REG DDRC
 
-/* init at DIV128 */
-#define SPI_SCK_INIT_DIVISOR 0x11
+/* init at DIV32 : 8Mhtz -> 250 000 */
+#define SPI_SCK_INIT_DIVISOR 0x10
 
 
 //------------------------------------------------------------------------------
 // SD operation timeouts
 
+#define SD_MAX_CMD0_TRIES 10
 #define SD_MAX_TRANSFERTS UINT16_MAX
-#define SD_MAX_COMMANDS 1000
+#define SD_MAX_COMMANDS UINT16_MAX
 
 
 //------------------------------------------------------------------------------

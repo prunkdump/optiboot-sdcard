@@ -925,11 +925,11 @@ uint8_t* find_firmware_data(FatFileDesc* fat, uint8_t cardType) {
     /* check filename  */
     bool entryFilenameFound = true;
     if( data[0] != 'F' ||
-	//data[1] != 'I' ||
-	//data[2] != 'R' ||
-	//data[3] != 'M' ||
-	//data[8] != 'H' ||
-	//data[9] != 'E' ||
+	data[1] != 'I' ||
+	data[2] != 'R' ||
+	data[3] != 'M' ||
+	data[8] != 'H' ||
+	data[9] != 'E' ||
 	data[10] != 'X' ) {      
       entryFilenameFound = false;
     }  
@@ -993,7 +993,7 @@ int sdcard_loader(void) {
   /* init read variables */
   uint8_t hexReadStep = WAIT_FOR_LINE_START;
   uint8_t stepBytesRemaining = 1;
-  uint8_t lineWords;
+  uint8_t lineWords = 0;
   uint16_t hexNumber;
   uint8_t* hexNumberByte = (uint8_t*)((void*)&hexNumber);
 
