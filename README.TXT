@@ -1,3 +1,11 @@
+To build this bootloader for the GNUVario :
+
+-> Install the AVR toolchain
+-> run "make atmega328_pro8 BAUD_RATE=57600"
+-> The result must be less than 2048 bytes
+
+------------------------------------------------------------
+
 This directory contains the Optiboot small bootloader for AVR
 microcontrollers, somewhat modified specifically for the Arduino
 environment.
