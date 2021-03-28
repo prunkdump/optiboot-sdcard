@@ -31,8 +31,6 @@
 /* CHIP SELECT PIN  */
 /********************/
 
-/* !!! don't works !!! */
-
 /* the default SS pin is PB2 */
 #ifndef SD_SS_PORT
 #define SD_SS_PORT B
@@ -44,8 +42,8 @@
 #endif
 
 /* build register name */
-#define SD_SS_PORT_REG PORTC
-#define SD_SS_DDR_REG DDRC
+#define SD_SS_PORT_REG PORTB
+#define SD_SS_DDR_REG DDRB
 
 /* init at DIV32 : 8Mhtz -> 250 000 */
 #define SPI_SCK_INIT_DIVISOR 0x10
