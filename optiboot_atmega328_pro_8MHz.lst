@@ -1,0 +1,1805 @@
+
+optiboot_atmega328.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .data         00000000  00800100  00007ff4  00000868  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  1 .text         000007f4  00007800  00007800  00000074  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .stab         00002418  00000000  00000000  00000868  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  3 .stabstr      00001306  00000000  00000000  00002c80  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  4 .comment      00000011  00000000  00000000  00003f86  2**0
+                  CONTENTS, READONLY
+
+Disassembly of section .text:
+
+00007800 <main>:
+    7800:	11 24       	eor	r1, r1
+    7802:	84 b7       	in	r24, 0x34	; 52
+    7804:	14 be       	out	0x34, r1	; 52
+    7806:	98 2f       	mov	r25, r24
+    7808:	9d 70       	andi	r25, 0x0D	; 13
+    780a:	09 f0       	breq	.+2      	; 0x780e <main+0xe>
+    780c:	84 d2       	rcall	.+1288   	; 0x7d16 <_Z8appStarth>
+    780e:	58 d1       	rcall	.+688    	; 0x7ac0 <_Z13sdcard_loaderv>
+    7810:	85 e0       	ldi	r24, 0x05	; 5
+    7812:	80 93 81 00 	sts	0x0081, r24	; 0x800081 <__DATA_REGION_ORIGIN__+0x21>
+    7816:	82 e0       	ldi	r24, 0x02	; 2
+    7818:	80 93 c0 00 	sts	0x00C0, r24	; 0x8000c0 <__DATA_REGION_ORIGIN__+0x60>
+    781c:	88 e1       	ldi	r24, 0x18	; 24
+    781e:	80 93 c1 00 	sts	0x00C1, r24	; 0x8000c1 <__DATA_REGION_ORIGIN__+0x61>
+    7822:	86 e0       	ldi	r24, 0x06	; 6
+    7824:	80 93 c2 00 	sts	0x00C2, r24	; 0x8000c2 <__DATA_REGION_ORIGIN__+0x62>
+    7828:	80 e1       	ldi	r24, 0x10	; 16
+    782a:	80 93 c4 00 	sts	0x00C4, r24	; 0x8000c4 <__DATA_REGION_ORIGIN__+0x64>
+    782e:	8e e0       	ldi	r24, 0x0E	; 14
+    7830:	5b d2       	rcall	.+1206   	; 0x7ce8 <_Z14watchdogConfigh>
+    7832:	25 9a       	sbi	0x04, 5	; 4
+    7834:	86 e0       	ldi	r24, 0x06	; 6
+    7836:	28 e1       	ldi	r18, 0x18	; 24
+    7838:	3e ef       	ldi	r19, 0xFE	; 254
+    783a:	91 e0       	ldi	r25, 0x01	; 1
+    783c:	30 93 85 00 	sts	0x0085, r19	; 0x800085 <__DATA_REGION_ORIGIN__+0x25>
+    7840:	20 93 84 00 	sts	0x0084, r18	; 0x800084 <__DATA_REGION_ORIGIN__+0x24>
+    7844:	96 bb       	out	0x16, r25	; 22
+    7846:	b0 9b       	sbis	0x16, 0	; 22
+    7848:	fe cf       	rjmp	.-4      	; 0x7846 <main+0x46>
+    784a:	1d 9a       	sbi	0x03, 5	; 3
+    784c:	a8 95       	wdr
+    784e:	81 50       	subi	r24, 0x01	; 1
+    7850:	a9 f7       	brne	.-22     	; 0x783c <main+0x3c>
+    7852:	c0 e0       	ldi	r28, 0x00	; 0
+    7854:	d0 e0       	ldi	r29, 0x00	; 0
+    7856:	93 e0       	ldi	r25, 0x03	; 3
+    7858:	f9 2e       	mov	r15, r25
+    785a:	ee 24       	eor	r14, r14
+    785c:	e3 94       	inc	r14
+    785e:	25 e0       	ldi	r18, 0x05	; 5
+    7860:	d2 2e       	mov	r13, r18
+    7862:	31 e1       	ldi	r19, 0x11	; 17
+    7864:	c3 2e       	mov	r12, r19
+    7866:	86 d0       	rcall	.+268    	; 0x7974 <_Z5getchv>
+    7868:	81 34       	cpi	r24, 0x41	; 65
+    786a:	71 f4       	brne	.+28     	; 0x7888 <main+0x88>
+    786c:	83 d0       	rcall	.+262    	; 0x7974 <_Z5getchv>
+    786e:	18 2f       	mov	r17, r24
+    7870:	41 d2       	rcall	.+1154   	; 0x7cf4 <_Z11verifySpacev>
+    7872:	12 38       	cpi	r17, 0x82	; 130
+    7874:	11 f4       	brne	.+4      	; 0x787a <main+0x7a>
+    7876:	82 e0       	ldi	r24, 0x02	; 2
+    7878:	05 c0       	rjmp	.+10     	; 0x7884 <main+0x84>
+    787a:	11 38       	cpi	r17, 0x81	; 129
+    787c:	11 f4       	brne	.+4      	; 0x7882 <main+0x82>
+    787e:	86 e0       	ldi	r24, 0x06	; 6
+    7880:	01 c0       	rjmp	.+2      	; 0x7884 <main+0x84>
+    7882:	83 e0       	ldi	r24, 0x03	; 3
+    7884:	70 d0       	rcall	.+224    	; 0x7966 <_Z5putchc>
+    7886:	6c c0       	rjmp	.+216    	; 0x7960 <main+0x160>
+    7888:	82 34       	cpi	r24, 0x42	; 66
+    788a:	11 f4       	brne	.+4      	; 0x7890 <main+0x90>
+    788c:	84 e1       	ldi	r24, 0x14	; 20
+    788e:	03 c0       	rjmp	.+6      	; 0x7896 <main+0x96>
+    7890:	85 34       	cpi	r24, 0x45	; 69
+    7892:	19 f4       	brne	.+6      	; 0x789a <main+0x9a>
+    7894:	85 e0       	ldi	r24, 0x05	; 5
+    7896:	37 d2       	rcall	.+1134   	; 0x7d06 <_ZL6getNchh>
+    7898:	63 c0       	rjmp	.+198    	; 0x7960 <main+0x160>
+    789a:	85 35       	cpi	r24, 0x55	; 85
+    789c:	41 f4       	brne	.+16     	; 0x78ae <main+0xae>
+    789e:	6a d0       	rcall	.+212    	; 0x7974 <_Z5getchv>
+    78a0:	c8 2f       	mov	r28, r24
+    78a2:	68 d0       	rcall	.+208    	; 0x7974 <_Z5getchv>
+    78a4:	d0 e0       	ldi	r29, 0x00	; 0
+    78a6:	d8 2b       	or	r29, r24
+    78a8:	cc 0f       	add	r28, r28
+    78aa:	dd 1f       	adc	r29, r29
+    78ac:	58 c0       	rjmp	.+176    	; 0x795e <main+0x15e>
+    78ae:	86 35       	cpi	r24, 0x56	; 86
+    78b0:	21 f4       	brne	.+8      	; 0x78ba <main+0xba>
+    78b2:	84 e0       	ldi	r24, 0x04	; 4
+    78b4:	28 d2       	rcall	.+1104   	; 0x7d06 <_ZL6getNchh>
+    78b6:	80 e0       	ldi	r24, 0x00	; 0
+    78b8:	e5 cf       	rjmp	.-54     	; 0x7884 <main+0x84>
+    78ba:	84 36       	cpi	r24, 0x64	; 100
+    78bc:	09 f0       	breq	.+2      	; 0x78c0 <main+0xc0>
+    78be:	32 c0       	rjmp	.+100    	; 0x7924 <main+0x124>
+    78c0:	59 d0       	rcall	.+178    	; 0x7974 <_Z5getchv>
+    78c2:	58 d0       	rcall	.+176    	; 0x7974 <_Z5getchv>
+    78c4:	b8 2e       	mov	r11, r24
+    78c6:	56 d0       	rcall	.+172    	; 0x7974 <_Z5getchv>
+    78c8:	a8 2e       	mov	r10, r24
+    78ca:	00 e0       	ldi	r16, 0x00	; 0
+    78cc:	11 e0       	ldi	r17, 0x01	; 1
+    78ce:	52 d0       	rcall	.+164    	; 0x7974 <_Z5getchv>
+    78d0:	f8 01       	movw	r30, r16
+    78d2:	81 93       	st	Z+, r24
+    78d4:	8f 01       	movw	r16, r30
+    78d6:	be 12       	cpse	r11, r30
+    78d8:	fa cf       	rjmp	.-12     	; 0x78ce <main+0xce>
+    78da:	0c d2       	rcall	.+1048   	; 0x7cf4 <_Z11verifySpacev>
+    78dc:	f5 e4       	ldi	r31, 0x45	; 69
+    78de:	af 12       	cpse	r10, r31
+    78e0:	01 c0       	rjmp	.+2      	; 0x78e4 <main+0xe4>
+    78e2:	ff cf       	rjmp	.-2      	; 0x78e2 <main+0xe2>
+    78e4:	fe 01       	movw	r30, r28
+    78e6:	f7 be       	out	0x37, r15	; 55
+    78e8:	e8 95       	spm
+    78ea:	07 b6       	in	r0, 0x37	; 55
+    78ec:	00 fc       	sbrc	r0, 0
+    78ee:	fd cf       	rjmp	.-6      	; 0x78ea <main+0xea>
+    78f0:	fe 01       	movw	r30, r28
+    78f2:	a0 e0       	ldi	r26, 0x00	; 0
+    78f4:	b1 e0       	ldi	r27, 0x01	; 1
+    78f6:	8c 91       	ld	r24, X
+    78f8:	11 96       	adiw	r26, 0x01	; 1
+    78fa:	2c 91       	ld	r18, X
+    78fc:	11 97       	sbiw	r26, 0x01	; 1
+    78fe:	90 e0       	ldi	r25, 0x00	; 0
+    7900:	92 2b       	or	r25, r18
+    7902:	0c 01       	movw	r0, r24
+    7904:	e7 be       	out	0x37, r14	; 55
+    7906:	e8 95       	spm
+    7908:	11 24       	eor	r1, r1
+    790a:	32 96       	adiw	r30, 0x02	; 2
+    790c:	12 96       	adiw	r26, 0x02	; 2
+    790e:	ba 12       	cpse	r11, r26
+    7910:	f2 cf       	rjmp	.-28     	; 0x78f6 <main+0xf6>
+    7912:	fe 01       	movw	r30, r28
+    7914:	d7 be       	out	0x37, r13	; 55
+    7916:	e8 95       	spm
+    7918:	07 b6       	in	r0, 0x37	; 55
+    791a:	00 fc       	sbrc	r0, 0
+    791c:	fd cf       	rjmp	.-6      	; 0x7918 <main+0x118>
+    791e:	c7 be       	out	0x37, r12	; 55
+    7920:	e8 95       	spm
+    7922:	1e c0       	rjmp	.+60     	; 0x7960 <main+0x160>
+    7924:	84 37       	cpi	r24, 0x74	; 116
+    7926:	71 f4       	brne	.+28     	; 0x7944 <main+0x144>
+    7928:	25 d0       	rcall	.+74     	; 0x7974 <_Z5getchv>
+    792a:	24 d0       	rcall	.+72     	; 0x7974 <_Z5getchv>
+    792c:	b8 2e       	mov	r11, r24
+    792e:	22 d0       	rcall	.+68     	; 0x7974 <_Z5getchv>
+    7930:	e1 d1       	rcall	.+962    	; 0x7cf4 <_Z11verifySpacev>
+    7932:	8e 01       	movw	r16, r28
+    7934:	f8 01       	movw	r30, r16
+    7936:	85 91       	lpm	r24, Z+
+    7938:	8f 01       	movw	r16, r30
+    793a:	15 d0       	rcall	.+42     	; 0x7966 <_Z5putchc>
+    793c:	ba 94       	dec	r11
+    793e:	b1 10       	cpse	r11, r1
+    7940:	f9 cf       	rjmp	.-14     	; 0x7934 <main+0x134>
+    7942:	0e c0       	rjmp	.+28     	; 0x7960 <main+0x160>
+    7944:	85 37       	cpi	r24, 0x75	; 117
+    7946:	39 f4       	brne	.+14     	; 0x7956 <main+0x156>
+    7948:	d5 d1       	rcall	.+938    	; 0x7cf4 <_Z11verifySpacev>
+    794a:	8e e1       	ldi	r24, 0x1E	; 30
+    794c:	0c d0       	rcall	.+24     	; 0x7966 <_Z5putchc>
+    794e:	85 e9       	ldi	r24, 0x95	; 149
+    7950:	0a d0       	rcall	.+20     	; 0x7966 <_Z5putchc>
+    7952:	8f e0       	ldi	r24, 0x0F	; 15
+    7954:	97 cf       	rjmp	.-210    	; 0x7884 <main+0x84>
+    7956:	81 35       	cpi	r24, 0x51	; 81
+    7958:	11 f4       	brne	.+4      	; 0x795e <main+0x15e>
+    795a:	88 e0       	ldi	r24, 0x08	; 8
+    795c:	c5 d1       	rcall	.+906    	; 0x7ce8 <_Z14watchdogConfigh>
+    795e:	ca d1       	rcall	.+916    	; 0x7cf4 <_Z11verifySpacev>
+    7960:	80 e1       	ldi	r24, 0x10	; 16
+    7962:	01 d0       	rcall	.+2      	; 0x7966 <_Z5putchc>
+    7964:	80 cf       	rjmp	.-256    	; 0x7866 <main+0x66>
+
+00007966 <_Z5putchc>:
+  }
+}
+
+void putch(char ch) {
+#ifndef SOFT_UART
+  while (!(UART_SRA & _BV(UDRE0)));
+    7966:	90 91 c0 00 	lds	r25, 0x00C0	; 0x8000c0 <__DATA_REGION_ORIGIN__+0x60>
+    796a:	95 ff       	sbrs	r25, 5
+    796c:	fc cf       	rjmp	.-8      	; 0x7966 <_Z5putchc>
+  UART_UDR = ch;
+    796e:	80 93 c6 00 	sts	0x00C6, r24	; 0x8000c6 <__DATA_REGION_ORIGIN__+0x66>
+    7972:	08 95       	ret
+
+00007974 <_Z5getchv>:
+      [uartBit] "I" (UART_RX_BIT)
+    :
+      "r25"
+);
+#else
+  while(!(UART_SRA & _BV(RXC0)))
+    7974:	80 91 c0 00 	lds	r24, 0x00C0	; 0x8000c0 <__DATA_REGION_ORIGIN__+0x60>
+    7978:	87 ff       	sbrs	r24, 7
+    797a:	fc cf       	rjmp	.-8      	; 0x7974 <_Z5getchv>
+    ;
+  if (!(UART_SRA & _BV(FE0))) {
+    797c:	80 91 c0 00 	lds	r24, 0x00C0	; 0x8000c0 <__DATA_REGION_ORIGIN__+0x60>
+    7980:	84 fd       	sbrc	r24, 4
+    7982:	01 c0       	rjmp	.+2      	; 0x7986 <_Z5getchv+0x12>
+
+// Watchdog functions. These are only safe with interrupts turned off.
+void watchdogReset() {
+  __asm__ __volatile__ (
+    "wdr\n"
+  );
+    7984:	a8 95       	wdr
+       * don't care that an invalid char is returned...)
+       */
+    watchdogReset();
+  }
+
+  ch = UART_UDR;
+    7986:	80 91 c6 00 	lds	r24, 0x00C6	; 0x8000c6 <__DATA_REGION_ORIGIN__+0x66>
+  LED_PIN |= _BV(LED);
+#endif
+#endif
+
+  return ch;
+}
+    798a:	08 95       	ret
+
+0000798c <_Z11fatTagFoundv>:
+
+/***********************/
+/* find firmware file  */
+/***********************/
+
+bool fatTagFound(void) {
+    798c:	81 e0       	ldi	r24, 0x01	; 1
+    798e:	90 91 3a 01 	lds	r25, 0x013A	; 0x80013a <_end+0x3a>
+    7992:	96 33       	cpi	r25, 0x36	; 54
+    7994:	09 f0       	breq	.+2      	; 0x7998 <_Z11fatTagFoundv+0xc>
+    7996:	80 e0       	ldi	r24, 0x00	; 0
+  if( buff[FAT16_ID_POS + 4] == '6' ) {
+    return true;
+  }
+
+   return false;
+}
+    7998:	08 95       	ret
+
+0000799a <_Z18find_firmware_dataP11FatFileDesch>:
+
+
+/* return pointer to the file root directory entry or pointer to root directory end */
+uint8_t* find_firmware_data(FatFileDesc* fat, uint8_t cardType) {
+    799a:	cf 92       	push	r12
+    799c:	df 92       	push	r13
+    799e:	ef 92       	push	r14
+    79a0:	ff 92       	push	r15
+    79a2:	1f 93       	push	r17
+    79a4:	cf 93       	push	r28
+    79a6:	df 93       	push	r29
+    79a8:	ec 01       	movw	r28, r24
+    79aa:	16 2f       	mov	r17, r22
+  
+  /* find fat 16 partition */
+  uint32_t partitionStartBlock;
+  
+  /* ckeck block 0 */
+  SdCard_readBlock(0, cardType);
+    79ac:	46 2f       	mov	r20, r22
+    79ae:	60 e0       	ldi	r22, 0x00	; 0
+    79b0:	70 e0       	ldi	r23, 0x00	; 0
+    79b2:	cb 01       	movw	r24, r22
+    79b4:	6d d2       	rcall	.+1242   	; 0x7e90 <_Z16SdCard_readBlockmh>
+
+  if( fatTagFound() ) { //Check "FAT16"
+    79b6:	ea df       	rcall	.-44     	; 0x798c <_Z11fatTagFoundv>
+    79b8:	81 11       	cpse	r24, r1
+    79ba:	10 c0       	rjmp	.+32     	; 0x79dc <_Z18find_firmware_dataP11FatFileDesch+0x42>
+    partitionStartBlock = 0;
+  } else {
+    /* read MBR to get the first partition and check again */
+    partitionStartBlock = *(uint32_t*)&buff[MBR_FIRST_PART_POS + MBR_PART_LBA_POS];
+    79bc:	c0 90 c6 02 	lds	r12, 0x02C6	; 0x8002c6 <_end+0x1c6>
+    79c0:	d0 90 c7 02 	lds	r13, 0x02C7	; 0x8002c7 <_end+0x1c7>
+    79c4:	e0 90 c8 02 	lds	r14, 0x02C8	; 0x8002c8 <_end+0x1c8>
+    79c8:	f0 90 c9 02 	lds	r15, 0x02C9	; 0x8002c9 <_end+0x1c9>
+    SdCard_readBlock(partitionStartBlock, cardType);
+    79cc:	41 2f       	mov	r20, r17
+    79ce:	c7 01       	movw	r24, r14
+    79d0:	b6 01       	movw	r22, r12
+    79d2:	5e d2       	rcall	.+1212   	; 0x7e90 <_Z16SdCard_readBlockmh>
+    if( ! fatTagFound() ) { //Check "FAT16"
+    79d4:	db df       	rcall	.-74     	; 0x798c <_Z11fatTagFoundv>
+    79d6:	81 11       	cpse	r24, r1
+    79d8:	04 c0       	rjmp	.+8      	; 0x79e2 <_Z18find_firmware_dataP11FatFileDesch+0x48>
+    79da:	51 c0       	rjmp	.+162    	; 0x7a7e <_Z18find_firmware_dataP11FatFileDesch+0xe4>
+  
+  /* ckeck block 0 */
+  SdCard_readBlock(0, cardType);
+
+  if( fatTagFound() ) { //Check "FAT16"
+    partitionStartBlock = 0;
+    79dc:	c1 2c       	mov	r12, r1
+    79de:	d1 2c       	mov	r13, r1
+    79e0:	76 01       	movw	r14, r12
+      return NULL; //no partition found
+    }
+  }
+  
+  /* read fat 16 parameters */
+  fat->blocksPerCluster = *(uint8_t*)&buff[BLOCKS_PER_CLUSTER_POS];
+    79e2:	80 91 0d 01 	lds	r24, 0x010D	; 0x80010d <_end+0xd>
+    79e6:	88 87       	std	Y+8, r24	; 0x08
+  
+  uint16_t reservedBlocksCount = *(uint16_t*)&buff[RESERVED_BLOCKS_COUNT_POS];
+  partitionStartBlock += reservedBlocksCount;
+    79e8:	80 91 0e 01 	lds	r24, 0x010E	; 0x80010e <_end+0xe>
+    79ec:	90 91 0f 01 	lds	r25, 0x010F	; 0x80010f <_end+0xf>
+    79f0:	c8 0e       	add	r12, r24
+    79f2:	d9 1e       	adc	r13, r25
+    79f4:	e1 1c       	adc	r14, r1
+    79f6:	f1 1c       	adc	r15, r1
+  fat->firstFatBlock = partitionStartBlock;
+    79f8:	c8 82       	st	Y, r12
+    79fa:	d9 82       	std	Y+1, r13	; 0x01
+    79fc:	ea 82       	std	Y+2, r14	; 0x02
+    79fe:	fb 82       	std	Y+3, r15	; 0x03
+
+  uint16_t blocksPerFAT = *(uint16_t*)&buff[BLOCKS_PER_FAT_POS];
+  partitionStartBlock += 2*blocksPerFAT;
+    7a00:	80 91 16 01 	lds	r24, 0x0116	; 0x800116 <_end+0x16>
+    7a04:	90 91 17 01 	lds	r25, 0x0117	; 0x800117 <_end+0x17>
+    7a08:	88 0f       	add	r24, r24
+    7a0a:	99 1f       	adc	r25, r25
+    7a0c:	c8 0e       	add	r12, r24
+    7a0e:	d9 1e       	adc	r13, r25
+    7a10:	e1 1c       	adc	r14, r1
+    7a12:	f1 1c       	adc	r15, r1
+  uint32_t rootDirectoryBlock = partitionStartBlock;
+
+  uint16_t rootEntriesCount = *(uint16_t*)&buff[ROOT_ENTRIES_COUNT_POS];
+  partitionStartBlock += rootEntriesCount * ROOT_ENTRY_SIZE / BLOCK_SIZE;
+  fat->dataBlock = partitionStartBlock;
+    7a14:	80 91 11 01 	lds	r24, 0x0111	; 0x800111 <_end+0x11>
+    7a18:	90 91 12 01 	lds	r25, 0x0112	; 0x800112 <_end+0x12>
+    7a1c:	35 e0       	ldi	r19, 0x05	; 5
+    7a1e:	88 0f       	add	r24, r24
+    7a20:	99 1f       	adc	r25, r25
+    7a22:	3a 95       	dec	r19
+    7a24:	e1 f7       	brne	.-8      	; 0x7a1e <_Z18find_firmware_dataP11FatFileDesch+0x84>
+    7a26:	89 2f       	mov	r24, r25
+    7a28:	99 27       	eor	r25, r25
+    7a2a:	86 95       	lsr	r24
+    7a2c:	a7 01       	movw	r20, r14
+    7a2e:	96 01       	movw	r18, r12
+    7a30:	28 0f       	add	r18, r24
+    7a32:	39 1f       	adc	r19, r25
+    7a34:	41 1d       	adc	r20, r1
+    7a36:	51 1d       	adc	r21, r1
+    7a38:	2c 83       	std	Y+4, r18	; 0x04
+    7a3a:	3d 83       	std	Y+5, r19	; 0x05
+    7a3c:	4e 83       	std	Y+6, r20	; 0x06
+    7a3e:	5f 83       	std	Y+7, r21	; 0x07
+
+  /* find firmware file  */
+    
+  /* load root directory block */
+  SdCard_readBlock(rootDirectoryBlock, cardType);
+    7a40:	41 2f       	mov	r20, r17
+    7a42:	c7 01       	movw	r24, r14
+    7a44:	b6 01       	movw	r22, r12
+    7a46:	24 d2       	rcall	.+1096   	; 0x7e90 <_Z16SdCard_readBlockmh>
+  
+  /* ckeck block 0 */
+  SdCard_readBlock(0, cardType);
+
+  if( fatTagFound() ) { //Check "FAT16"
+    partitionStartBlock = 0;
+    7a48:	e0 e0       	ldi	r30, 0x00	; 0
+    7a4a:	f1 e0       	ldi	r31, 0x01	; 1
+  SdCard_readBlock(rootDirectoryBlock, cardType);
+ 
+  uint8_t* data = buff;
+
+  /* check the root directory entries */
+  while( data[0x00] != 0x00 ) {
+    7a4c:	80 81       	ld	r24, Z
+    7a4e:	88 23       	and	r24, r24
+    7a50:	b1 f0       	breq	.+44     	; 0x7a7e <_Z18find_firmware_dataP11FatFileDesch+0xe4>
+
+    /* check filename  */
+    bool entryFilenameFound = true;
+    if( data[0] != 'F' ||
+    7a52:	86 34       	cpi	r24, 0x46	; 70
+    7a54:	b9 f4       	brne	.+46     	; 0x7a84 <_Z18find_firmware_dataP11FatFileDesch+0xea>
+    7a56:	81 81       	ldd	r24, Z+1	; 0x01
+    7a58:	89 34       	cpi	r24, 0x49	; 73
+    7a5a:	a1 f4       	brne	.+40     	; 0x7a84 <_Z18find_firmware_dataP11FatFileDesch+0xea>
+	data[1] != 'I' ||
+    7a5c:	82 81       	ldd	r24, Z+2	; 0x02
+    7a5e:	82 35       	cpi	r24, 0x52	; 82
+    7a60:	89 f4       	brne	.+34     	; 0x7a84 <_Z18find_firmware_dataP11FatFileDesch+0xea>
+	data[2] != 'R' ||
+    7a62:	83 81       	ldd	r24, Z+3	; 0x03
+    7a64:	8d 34       	cpi	r24, 0x4D	; 77
+    7a66:	71 f4       	brne	.+28     	; 0x7a84 <_Z18find_firmware_dataP11FatFileDesch+0xea>
+	data[3] != 'M' ||
+    7a68:	80 85       	ldd	r24, Z+8	; 0x08
+    7a6a:	88 34       	cpi	r24, 0x48	; 72
+    7a6c:	59 f4       	brne	.+22     	; 0x7a84 <_Z18find_firmware_dataP11FatFileDesch+0xea>
+	data[8] != 'H' ||
+    7a6e:	81 85       	ldd	r24, Z+9	; 0x09
+    7a70:	85 34       	cpi	r24, 0x45	; 69
+    7a72:	41 f4       	brne	.+16     	; 0x7a84 <_Z18find_firmware_dataP11FatFileDesch+0xea>
+	data[9] != 'E' ||
+    7a74:	82 85       	ldd	r24, Z+10	; 0x0a
+    7a76:	88 35       	cpi	r24, 0x58	; 88
+    7a78:	29 f4       	brne	.+10     	; 0x7a84 <_Z18find_firmware_dataP11FatFileDesch+0xea>
+    7a7a:	cf 01       	movw	r24, r30
+    7a7c:	0e c0       	rjmp	.+28     	; 0x7a9a <_Z18find_firmware_dataP11FatFileDesch+0x100>
+  } else {
+    /* read MBR to get the first partition and check again */
+    partitionStartBlock = *(uint32_t*)&buff[MBR_FIRST_PART_POS + MBR_PART_LBA_POS];
+    SdCard_readBlock(partitionStartBlock, cardType);
+    if( ! fatTagFound() ) { //Check "FAT16"
+      return NULL; //no partition found
+    7a7e:	80 e0       	ldi	r24, 0x00	; 0
+    7a80:	90 e0       	ldi	r25, 0x00	; 0
+    7a82:	0b c0       	rjmp	.+22     	; 0x7a9a <_Z18find_firmware_dataP11FatFileDesch+0x100>
+
+    if( entryFilenameFound ) {
+      break;
+    } else {
+      /* next entry */
+      data += ROOT_ENTRY_SIZE;
+    7a84:	b0 96       	adiw	r30, 0x20	; 32
+      if( data >= buff + BLOCK_SIZE ) {
+    7a86:	e1 15       	cp	r30, r1
+    7a88:	43 e0       	ldi	r20, 0x03	; 3
+    7a8a:	f4 07       	cpc	r31, r20
+    7a8c:	f9 f6       	brne	.-66     	; 0x7a4c <_Z18find_firmware_dataP11FatFileDesch+0xb2>
+	rootDirectoryBlock++;
+    7a8e:	3f ef       	ldi	r19, 0xFF	; 255
+    7a90:	c3 1a       	sub	r12, r19
+    7a92:	d3 0a       	sbc	r13, r19
+    7a94:	e3 0a       	sbc	r14, r19
+    7a96:	f3 0a       	sbc	r15, r19
+    7a98:	d3 cf       	rjmp	.-90     	; 0x7a40 <_Z18find_firmware_dataP11FatFileDesch+0xa6>
+  if( data[0x00] == 0x00 ) {
+    return NULL;
+  }
+
+  return data;
+}
+    7a9a:	df 91       	pop	r29
+    7a9c:	cf 91       	pop	r28
+    7a9e:	1f 91       	pop	r17
+    7aa0:	ff 90       	pop	r15
+    7aa2:	ef 90       	pop	r14
+    7aa4:	df 90       	pop	r13
+    7aa6:	cf 90       	pop	r12
+    7aa8:	08 95       	ret
+
+00007aaa <_Z10write_pagej>:
+    
+
+void write_page(uint16_t address) {
+  __boot_page_write_short(address);
+    7aaa:	25 e0       	ldi	r18, 0x05	; 5
+    7aac:	fc 01       	movw	r30, r24
+    7aae:	27 bf       	out	0x37, r18	; 55
+    7ab0:	e8 95       	spm
+  boot_spm_busy_wait();
+    7ab2:	07 b6       	in	r0, 0x37	; 55
+    7ab4:	00 fc       	sbrc	r0, 0
+    7ab6:	fd cf       	rjmp	.-6      	; 0x7ab2 <_Z10write_pagej+0x8>
+#if defined(RWWSRE)
+  // Reenable read access to flash
+  boot_rww_enable();
+    7ab8:	81 e1       	ldi	r24, 0x11	; 17
+    7aba:	87 bf       	out	0x37, r24	; 55
+    7abc:	e8 95       	spm
+    7abe:	08 95       	ret
+
+00007ac0 <_Z13sdcard_loaderv>:
+#endif
+}
+
+
+int sdcard_loader(void) {
+    7ac0:	a5 e1       	ldi	r26, 0x15	; 21
+    7ac2:	b0 e0       	ldi	r27, 0x00	; 0
+    7ac4:	e5 e6       	ldi	r30, 0x65	; 101
+    7ac6:	fd e3       	ldi	r31, 0x3D	; 61
+    7ac8:	5e c2       	rjmp	.+1212   	; 0x7f86 <__prologue_saves__>
+
+  /* init sd card communication */
+  uint8_t cardType = SdCard_begin();
+    7aca:	82 d1       	rcall	.+772    	; 0x7dd0 <_Z12SdCard_beginv>
+    7acc:	8e 87       	std	Y+14, r24	; 0x0e
+    7ace:	88 23       	and	r24, r24
+  if( ! cardType ) {
+    7ad0:	09 f4       	brne	.+2      	; 0x7ad4 <_Z13sdcard_loaderv+0x14>
+    7ad2:	ff c0       	rjmp	.+510    	; 0x7cd2 <_Z13sdcard_loaderv+0x212>
+    return -1;
+  }
+
+  /* try to find firmware data */
+  FatFileDesc fat;
+  uint8_t* fileEntry = find_firmware_data(&fat, cardType);
+    7ad4:	68 2f       	mov	r22, r24
+    7ad6:	ce 01       	movw	r24, r28
+    7ad8:	01 96       	adiw	r24, 0x01	; 1
+    7ada:	5f df       	rcall	.-322    	; 0x799a <_Z18find_firmware_dataP11FatFileDesch>
+    7adc:	00 97       	sbiw	r24, 0x00	; 0
+  if( ! fileEntry ) {
+    7ade:	09 f4       	brne	.+2      	; 0x7ae2 <_Z13sdcard_loaderv+0x22>
+    7ae0:	f8 c0       	rjmp	.+496    	; 0x7cd2 <_Z13sdcard_loaderv+0x212>
+    7ae2:	fc 01       	movw	r30, r24
+  /*****************/
+  /* load firmware */
+  /*****************/
+
+  uint8_t* data = buff;
+  uint16_t fileCluster =  *(uint16_t*)&fileEntry[ROOT_ENTRY_CLUSTER_POS];
+    7ae4:	02 8c       	ldd	r0, Z+26	; 0x1a
+    7ae6:	f3 8d       	ldd	r31, Z+27	; 0x1b
+    7ae8:	e0 2d       	mov	r30, r0
+    7aea:	fd 87       	std	Y+13, r31	; 0x0d
+    7aec:	ec 87       	std	Y+12, r30	; 0x0c
+    7aee:	fc 01       	movw	r30, r24
+  uint8_t blocksReadInCluster = 0;
+  uint32_t fileSize = *(uint32_t*)&fileEntry[ROOT_ENTRY_SIZE_POS];
+    7af0:	44 8c       	ldd	r4, Z+28	; 0x1c
+    7af2:	55 8c       	ldd	r5, Z+29	; 0x1d
+    7af4:	66 8c       	ldd	r6, Z+30	; 0x1e
+    7af6:	77 8c       	ldd	r7, Z+31	; 0x1f
+    7af8:	2c 85       	ldd	r18, Y+12	; 0x0c
+  uint32_t currentBlock = fat.dataBlock + (fileCluster - 2)*fat.blocksPerCluster;
+    7afa:	3d 85       	ldd	r19, Y+13	; 0x0d
+    7afc:	22 50       	subi	r18, 0x02	; 2
+    7afe:	31 09       	sbc	r19, r1
+    7b00:	49 85       	ldd	r20, Y+9	; 0x09
+    7b02:	42 9f       	mul	r20, r18
+    7b04:	c0 01       	movw	r24, r0
+    7b06:	43 9f       	mul	r20, r19
+    7b08:	90 0d       	add	r25, r0
+    7b0a:	11 24       	eor	r1, r1
+    7b0c:	cd 80       	ldd	r12, Y+5	; 0x05
+    7b0e:	de 80       	ldd	r13, Y+6	; 0x06
+    7b10:	ef 80       	ldd	r14, Y+7	; 0x07
+    7b12:	f8 84       	ldd	r15, Y+8	; 0x08
+    7b14:	c8 0e       	add	r12, r24
+    7b16:	d9 1e       	adc	r13, r25
+    7b18:	e1 1c       	adc	r14, r1
+    7b1a:	f1 1c       	adc	r15, r1
+
+  uint16_t pageBaseAddress = 0x0000;
+  uint16_t pageAddress = 0x0000;
+
+  /* load the start of file */
+  SdCard_readBlock(currentBlock, cardType);
+    7b1c:	4e 85       	ldd	r20, Y+14	; 0x0e
+    7b1e:	c7 01       	movw	r24, r14
+    7b20:	b6 01       	movw	r22, r12
+    7b22:	b6 d1       	rcall	.+876    	; 0x7e90 <_Z16SdCard_readBlockmh>
+    7b24:	21 2c       	mov	r2, r1
+  uint8_t lineWords = 0;
+  uint16_t hexNumber;
+  uint8_t* hexNumberByte = (uint8_t*)((void*)&hexNumber);
+
+  uint16_t pageBaseAddress = 0x0000;
+  uint16_t pageAddress = 0x0000;
+    7b26:	31 2c       	mov	r3, r1
+    7b28:	a1 2c       	mov	r10, r1
+  uint8_t stepBytesRemaining = 1;
+  uint8_t lineWords = 0;
+  uint16_t hexNumber;
+  uint8_t* hexNumberByte = (uint8_t*)((void*)&hexNumber);
+
+  uint16_t pageBaseAddress = 0x0000;
+    7b2a:	b1 2c       	mov	r11, r1
+    7b2c:	4e 01       	movw	r8, r28
+  /* init read variables */
+  uint8_t hexReadStep = WAIT_FOR_LINE_START;
+  uint8_t stepBytesRemaining = 1;
+  uint8_t lineWords = 0;
+  uint16_t hexNumber;
+  uint8_t* hexNumberByte = (uint8_t*)((void*)&hexNumber);
+    7b2e:	fa e0       	ldi	r31, 0x0A	; 10
+    7b30:	8f 0e       	add	r8, r31
+    7b32:	91 1c       	adc	r9, r1
+    7b34:	1a 8a       	std	Y+18, r1	; 0x12
+  uint32_t currentBlock = fat.dataBlock + (fileCluster - 2)*fat.blocksPerCluster;
+  
+  /* init read variables */
+  uint8_t hexReadStep = WAIT_FOR_LINE_START;
+  uint8_t stepBytesRemaining = 1;
+  uint8_t lineWords = 0;
+    7b36:	11 e0       	ldi	r17, 0x01	; 1
+  uint32_t fileSize = *(uint32_t*)&fileEntry[ROOT_ENTRY_SIZE_POS];
+  uint32_t currentBlock = fat.dataBlock + (fileCluster - 2)*fat.blocksPerCluster;
+  
+  /* init read variables */
+  uint8_t hexReadStep = WAIT_FOR_LINE_START;
+  uint8_t stepBytesRemaining = 1;
+    7b38:	00 e0       	ldi	r16, 0x00	; 0
+  uint8_t blocksReadInCluster = 0;
+  uint32_t fileSize = *(uint32_t*)&fileEntry[ROOT_ENTRY_SIZE_POS];
+  uint32_t currentBlock = fat.dataBlock + (fileCluster - 2)*fat.blocksPerCluster;
+  
+  /* init read variables */
+  uint8_t hexReadStep = WAIT_FOR_LINE_START;
+    7b3a:	19 8a       	std	Y+17, r1	; 0x11
+  /* load firmware */
+  /*****************/
+
+  uint8_t* data = buff;
+  uint16_t fileCluster =  *(uint16_t*)&fileEntry[ROOT_ENTRY_CLUSTER_POS];
+  uint8_t blocksReadInCluster = 0;
+    7b3c:	20 e0       	ldi	r18, 0x00	; 0
+
+  /*****************/
+  /* load firmware */
+  /*****************/
+
+  uint8_t* data = buff;
+    7b3e:	31 e0       	ldi	r19, 0x01	; 1
+    7b40:	38 8b       	std	Y+16, r19	; 0x10
+    7b42:	2f 87       	std	Y+15, r18	; 0x0f
+    7b44:	8c 8a       	std	Y+20, r8	; 0x14
+    7b46:	9d 8a       	std	Y+21, r9	; 0x15
+    7b48:	41 14       	cp	r4, r1
+
+  /* load the start of file */
+  SdCard_readBlock(currentBlock, cardType);
+
+  /* main loop */
+  while( fileSize ) {
+    7b4a:	51 04       	cpc	r5, r1
+    7b4c:	61 04       	cpc	r6, r1
+    7b4e:	71 04       	cpc	r7, r1
+    7b50:	09 f4       	brne	.+2      	; 0x7b54 <_Z13sdcard_loaderv+0x94>
+    7b52:	bf c0       	rjmp	.+382    	; 0x7cd2 <_Z13sdcard_loaderv+0x212>
+    7b54:	ef 85       	ldd	r30, Y+15	; 0x0f
+
+    /* get a new byte from file */
+    uint8_t c = *data;
+    7b56:	f8 89       	ldd	r31, Y+16	; 0x10
+    7b58:	21 91       	ld	r18, Z+
+    7b5a:	f8 8b       	std	Y+16, r31	; 0x10
+    7b5c:	ef 87       	std	Y+15, r30	; 0x0f
+    7b5e:	2b 8b       	std	Y+19, r18	; 0x13
+    7b60:	31 e0       	ldi	r19, 0x01	; 1
+    fileSize--;
+    7b62:	43 1a       	sub	r4, r19
+    7b64:	51 08       	sbc	r5, r1
+    7b66:	61 08       	sbc	r6, r1
+    7b68:	71 08       	sbc	r7, r1
+    7b6a:	e1 15       	cp	r30, r1
+
+    /* update pointer */
+    data++;
+
+    /* need to change block ? */
+    if( data >= buff + BLOCK_SIZE ) {
+    7b6c:	f3 40       	sbci	r31, 0x03	; 3
+    7b6e:	08 f4       	brcc	.+2      	; 0x7b72 <_Z13sdcard_loaderv+0xb2>
+    7b70:	3f c0       	rjmp	.+126    	; 0x7bf0 <_Z13sdcard_loaderv+0x130>
+    7b72:	99 89       	ldd	r25, Y+17	; 0x11
+      currentBlock++;
+      blocksReadInCluster++;
+    7b74:	9f 5f       	subi	r25, 0xFF	; 255
+    7b76:	99 8b       	std	Y+17, r25	; 0x11
+    7b78:	89 85       	ldd	r24, Y+9	; 0x09
+
+      /* need to change cluster ? */
+      if( blocksReadInCluster >= fat.blocksPerCluster ) {
+    7b7a:	98 17       	cp	r25, r24
+    7b7c:	30 f4       	brcc	.+12     	; 0x7b8a <_Z13sdcard_loaderv+0xca>
+    7b7e:	ef ef       	ldi	r30, 0xFF	; 255
+    /* update pointer */
+    data++;
+
+    /* need to change block ? */
+    if( data >= buff + BLOCK_SIZE ) {
+      currentBlock++;
+    7b80:	ce 1a       	sub	r12, r30
+    7b82:	de 0a       	sbc	r13, r30
+    7b84:	ee 0a       	sbc	r14, r30
+    7b86:	fe 0a       	sbc	r15, r30
+    7b88:	2b c0       	rjmp	.+86     	; 0x7be0 <_Z13sdcard_loaderv+0x120>
+    7b8a:	8c 85       	ldd	r24, Y+12	; 0x0c
+	//uint16_t fatEntryBlocks = fatEntryAdress/BLOCK_SIZE;
+	//uint16_t fatEntryPos = fatEntryAdress - fatEntryAdress*BLOCK_SIZE;  //rem without gcc library
+	uint16_t fatEntryBlocks = fileCluster >> 8;
+	uint16_t fatEntryPos = fileCluster % 256;
+	
+	SdCard_readBlock(fat.firstFatBlock + fatEntryBlocks, cardType);
+    7b8c:	9d 85       	ldd	r25, Y+13	; 0x0d
+    7b8e:	29 2f       	mov	r18, r25
+    7b90:	33 27       	eor	r19, r19
+    7b92:	89 81       	ldd	r24, Y+1	; 0x01
+    7b94:	9a 81       	ldd	r25, Y+2	; 0x02
+    7b96:	ab 81       	ldd	r26, Y+3	; 0x03
+    7b98:	bc 81       	ldd	r27, Y+4	; 0x04
+    7b9a:	bc 01       	movw	r22, r24
+    7b9c:	cd 01       	movw	r24, r26
+    7b9e:	62 0f       	add	r22, r18
+    7ba0:	73 1f       	adc	r23, r19
+    7ba2:	81 1d       	adc	r24, r1
+    7ba4:	91 1d       	adc	r25, r1
+    7ba6:	4e 85       	ldd	r20, Y+14	; 0x0e
+    7ba8:	73 d1       	rcall	.+742    	; 0x7e90 <_Z16SdCard_readBlockmh>
+    7baa:	ec 85       	ldd	r30, Y+12	; 0x0c
+	fileCluster = ((uint16_t*)buff)[fatEntryPos];
+    7bac:	fd 85       	ldd	r31, Y+13	; 0x0d
+    7bae:	ff 27       	eor	r31, r31
+    7bb0:	ee 0f       	add	r30, r30
+    7bb2:	ff 1f       	adc	r31, r31
+    7bb4:	f3 95       	inc	r31
+    7bb6:	20 81       	ld	r18, Z
+    7bb8:	31 81       	ldd	r19, Z+1	; 0x01
+    7bba:	3d 87       	std	Y+13, r19	; 0x0d
+    7bbc:	2c 87       	std	Y+12, r18	; 0x0c
+    7bbe:	22 50       	subi	r18, 0x02	; 2
+	currentBlock = fat.dataBlock + (fileCluster - 2)*fat.blocksPerCluster;
+    7bc0:	31 09       	sbc	r19, r1
+    7bc2:	49 85       	ldd	r20, Y+9	; 0x09
+    7bc4:	42 9f       	mul	r20, r18
+    7bc6:	c0 01       	movw	r24, r0
+    7bc8:	43 9f       	mul	r20, r19
+    7bca:	90 0d       	add	r25, r0
+    7bcc:	11 24       	eor	r1, r1
+    7bce:	cd 80       	ldd	r12, Y+5	; 0x05
+    7bd0:	de 80       	ldd	r13, Y+6	; 0x06
+    7bd2:	ef 80       	ldd	r14, Y+7	; 0x07
+    7bd4:	f8 84       	ldd	r15, Y+8	; 0x08
+    7bd6:	c8 0e       	add	r12, r24
+    7bd8:	d9 1e       	adc	r13, r25
+    7bda:	e1 1c       	adc	r14, r1
+    7bdc:	f1 1c       	adc	r15, r1
+
+      /* need to change cluster ? */
+      if( blocksReadInCluster >= fat.blocksPerCluster ) {
+	
+	/* next cluster */
+	blocksReadInCluster = 0;
+    7bde:	19 8a       	std	Y+17, r1	; 0x11
+	SdCard_readBlock(fat.firstFatBlock + fatEntryBlocks, cardType);
+	fileCluster = ((uint16_t*)buff)[fatEntryPos];
+	currentBlock = fat.dataBlock + (fileCluster - 2)*fat.blocksPerCluster;
+      }
+      
+      SdCard_readBlock(currentBlock, cardType);
+    7be0:	4e 85       	ldd	r20, Y+14	; 0x0e
+    7be2:	c7 01       	movw	r24, r14
+    7be4:	b6 01       	movw	r22, r12
+    7be6:	54 d1       	rcall	.+680    	; 0x7e90 <_Z16SdCard_readBlockmh>
+    7be8:	80 e0       	ldi	r24, 0x00	; 0
+      data = buff;
+    7bea:	91 e0       	ldi	r25, 0x01	; 1
+    7bec:	98 8b       	std	Y+16, r25	; 0x10
+    7bee:	8f 87       	std	Y+15, r24	; 0x0f
+    7bf0:	01 11       	cpse	r16, r1
+    }
+    
+    /* interpret the byte */
+    if( hexReadStep == WAIT_FOR_LINE_START ) {
+    7bf2:	05 c0       	rjmp	.+10     	; 0x7bfe <_Z13sdcard_loaderv+0x13e>
+    7bf4:	9b 89       	ldd	r25, Y+19	; 0x13
+
+      if( c != ':' ) {
+    7bf6:	9a 33       	cpi	r25, 0x3A	; 58
+    7bf8:	91 f0       	breq	.+36     	; 0x7c1e <_Z13sdcard_loaderv+0x15e>
+    7bfa:	1f 5f       	subi	r17, 0xFF	; 255
+	stepBytesRemaining++; //prevent ending step 
+    7bfc:	10 c0       	rjmp	.+32     	; 0x7c1e <_Z13sdcard_loaderv+0x15e>
+    7bfe:	f4 01       	movw	r30, r8
+      }
+    } else {
+      /* build number */
+      *hexNumberByte <<= 4;
+    7c00:	80 81       	ld	r24, Z
+    7c02:	82 95       	swap	r24
+    7c04:	80 7f       	andi	r24, 0xF0	; 240
+    7c06:	80 83       	st	Z, r24
+    7c08:	fb 89       	ldd	r31, Y+19	; 0x13
+      if( c <= '9' ) {
+    7c0a:	fa 33       	cpi	r31, 0x3A	; 58
+    7c0c:	18 f4       	brcc	.+6      	; 0x7c14 <_Z13sdcard_loaderv+0x154>
+    7c0e:	9f 2f       	mov	r25, r31
+	*hexNumberByte += (c - '0');
+    7c10:	90 53       	subi	r25, 0x30	; 48
+    7c12:	02 c0       	rjmp	.+4      	; 0x7c18 <_Z13sdcard_loaderv+0x158>
+    7c14:	9b 89       	ldd	r25, Y+19	; 0x13
+      } else {
+	*hexNumberByte += c - 'A' + 0x0A;
+    7c16:	97 53       	subi	r25, 0x37	; 55
+    7c18:	89 0f       	add	r24, r25
+    7c1a:	f4 01       	movw	r30, r8
+    7c1c:	80 83       	st	Z, r24
+    7c1e:	11 50       	subi	r17, 0x01	; 1
+      }
+    }
+
+    /* byte interpreted */
+    stepBytesRemaining--;
+    7c20:	12 30       	cpi	r17, 0x02	; 2
+    if( stepBytesRemaining == 2 ) { //if reading word, next byte
+    7c22:	21 f4       	brne	.+8      	; 0x7c2c <_Z13sdcard_loaderv+0x16c>
+    7c24:	ff ef       	ldi	r31, 0xFF	; 255
+      hexNumberByte++;
+    7c26:	8f 1a       	sub	r8, r31
+    7c28:	9f 0a       	sbc	r9, r31
+    7c2a:	8e cf       	rjmp	.-228    	; 0x7b48 <_Z13sdcard_loaderv+0x88>
+    7c2c:	11 11       	cpse	r17, r1
+    }
+
+    /* check if step is finished */
+    if( stepBytesRemaining == 0 ) {
+    7c2e:	8c cf       	rjmp	.-232    	; 0x7b48 <_Z13sdcard_loaderv+0x88>
+    7c30:	00 23       	and	r16, r16
+
+      if( hexReadStep == WAIT_FOR_LINE_START ) {
+    7c32:	09 f4       	brne	.+2      	; 0x7c36 <_Z13sdcard_loaderv+0x176>
+    7c34:	3f c0       	rjmp	.+126    	; 0x7cb4 <_Z13sdcard_loaderv+0x1f4>
+    7c36:	01 30       	cpi	r16, 0x01	; 1
+	
+	/* next read two byte of line size */
+	stepBytesRemaining = 2;  
+      }
+
+      else if( hexReadStep ==  READ_LINE_SIZE ) {
+    7c38:	31 f4       	brne	.+12     	; 0x7c46 <_Z13sdcard_loaderv+0x186>
+    7c3a:	8a 85       	ldd	r24, Y+10	; 0x0a
+
+	lineWords = hexNumber/2;
+    7c3c:	9b 85       	ldd	r25, Y+11	; 0x0b
+    7c3e:	96 95       	lsr	r25
+    7c40:	87 95       	ror	r24
+    7c42:	8a 8b       	std	Y+18, r24	; 0x12
+    7c44:	4c c0       	rjmp	.+152    	; 0x7cde <_Z13sdcard_loaderv+0x21e>
+    7c46:	02 30       	cpi	r16, 0x02	; 2
+	/* next read 4 byte of address */
+	/* the value is not used */
+	stepBytesRemaining = 4;
+      }
+
+      else if( hexReadStep ==  READ_ADDRESS ) {
+    7c48:	09 f4       	brne	.+2      	; 0x7c4c <_Z13sdcard_loaderv+0x18c>
+    7c4a:	34 c0       	rjmp	.+104    	; 0x7cb4 <_Z13sdcard_loaderv+0x1f4>
+    7c4c:	03 30       	cpi	r16, 0x03	; 3
+
+	/* next read 2 byt eof line type */
+	stepBytesRemaining = 2;
+      }
+
+      else if( hexReadStep == READ_LINE_TYPE ) {
+    7c4e:	61 f4       	brne	.+24     	; 0x7c68 <_Z13sdcard_loaderv+0x1a8>
+    7c50:	8a 85       	ldd	r24, Y+10	; 0x0a
+
+	if( hexNumber == 0x01 ) {
+    7c52:	9b 85       	ldd	r25, Y+11	; 0x0b
+    7c54:	01 97       	sbiw	r24, 0x01	; 1
+    7c56:	09 f0       	breq	.+2      	; 0x7c5a <_Z13sdcard_loaderv+0x19a>
+    7c58:	42 c0       	rjmp	.+132    	; 0x7cde <_Z13sdcard_loaderv+0x21e>
+	  // file end terminate flash
+	  if( pageAddress != pageBaseAddress ) {
+    7c5a:	a2 14       	cp	r10, r2
+    7c5c:	b3 04       	cpc	r11, r3
+    7c5e:	09 f4       	brne	.+2      	; 0x7c62 <_Z13sdcard_loaderv+0x1a2>
+    7c60:	3b c0       	rjmp	.+118    	; 0x7cd8 <_Z13sdcard_loaderv+0x218>
+	    write_page(pageBaseAddress);
+    7c62:	c5 01       	movw	r24, r10
+    7c64:	22 df       	rcall	.-444    	; 0x7aaa <_Z10write_pagej>
+    7c66:	38 c0       	rjmp	.+112    	; 0x7cd8 <_Z13sdcard_loaderv+0x218>
+    7c68:	a2 14       	cp	r10, r2
+      }
+
+      else { //hexReadStep == READ_DATA
+
+	/* if needed prepare flash page */
+	if( pageAddress == pageBaseAddress ) {
+    7c6a:	b3 04       	cpc	r11, r3
+    7c6c:	39 f4       	brne	.+14     	; 0x7c7c <_Z13sdcard_loaderv+0x1bc>
+    7c6e:	23 e0       	ldi	r18, 0x03	; 3
+	  __boot_page_erase_short(pageBaseAddress);
+    7c70:	f5 01       	movw	r30, r10
+    7c72:	27 bf       	out	0x37, r18	; 55
+    7c74:	e8 95       	spm
+    7c76:	07 b6       	in	r0, 0x37	; 55
+	  boot_spm_busy_wait();
+    7c78:	00 fc       	sbrc	r0, 0
+    7c7a:	fd cf       	rjmp	.-6      	; 0x7c76 <_Z13sdcard_loaderv+0x1b6>
+    7c7c:	8a 85       	ldd	r24, Y+10	; 0x0a
+	}
+
+	/* write a new word */
+	__boot_page_fill_short(pageAddress, hexNumber);
+    7c7e:	9b 85       	ldd	r25, Y+11	; 0x0b
+    7c80:	21 e0       	ldi	r18, 0x01	; 1
+    7c82:	f1 01       	movw	r30, r2
+    7c84:	0c 01       	movw	r0, r24
+    7c86:	27 bf       	out	0x37, r18	; 55
+    7c88:	e8 95       	spm
+    7c8a:	11 24       	eor	r1, r1
+    7c8c:	32 e0       	ldi	r19, 0x02	; 2
+	pageAddress += 2;
+    7c8e:	23 0e       	add	r2, r19
+    7c90:	31 1c       	adc	r3, r1
+    7c92:	8a 89       	ldd	r24, Y+18	; 0x12
+	lineWords--;
+    7c94:	81 50       	subi	r24, 0x01	; 1
+    7c96:	8a 8b       	std	Y+18, r24	; 0x12
+    7c98:	c1 01       	movw	r24, r2
+
+	/* check if we need to change page */
+	if( pageAddress - pageBaseAddress >= SPM_PAGESIZE ) {
+    7c9a:	8a 19       	sub	r24, r10
+    7c9c:	9b 09       	sbc	r25, r11
+    7c9e:	80 38       	cpi	r24, 0x80	; 128
+    7ca0:	91 05       	cpc	r25, r1
+    7ca2:	28 f0       	brcs	.+10     	; 0x7cae <_Z13sdcard_loaderv+0x1ee>
+	  write_page(pageBaseAddress);
+    7ca4:	c5 01       	movw	r24, r10
+    7ca6:	01 df       	rcall	.-510    	; 0x7aaa <_Z10write_pagej>
+    7ca8:	90 e8       	ldi	r25, 0x80	; 128
+	  pageBaseAddress += SPM_PAGESIZE; //so pageBaseAddress == pageAddress
+    7caa:	a9 0e       	add	r10, r25
+    7cac:	b1 1c       	adc	r11, r1
+    7cae:	04 30       	cpi	r16, 0x04	; 4
+	}
+      }
+ 
+      /* go to next step */
+      if( hexReadStep != READ_DATA ) {
+    7cb0:	21 f0       	breq	.+8      	; 0x7cba <_Z13sdcard_loaderv+0x1fa>
+    7cb2:	01 c0       	rjmp	.+2      	; 0x7cb6 <_Z13sdcard_loaderv+0x1f6>
+    7cb4:	12 e0       	ldi	r17, 0x02	; 2
+    if( stepBytesRemaining == 0 ) {
+
+      if( hexReadStep == WAIT_FOR_LINE_START ) {
+	
+	/* next read two byte of line size */
+	stepBytesRemaining = 2;  
+    7cb6:	0f 5f       	subi	r16, 0xFF	; 255
+	}
+      }
+ 
+      /* go to next step */
+      if( hexReadStep != READ_DATA ) {
+	hexReadStep++;
+    7cb8:	07 c0       	rjmp	.+14     	; 0x7cc8 <_Z13sdcard_loaderv+0x208>
+    7cba:	ea 89       	ldd	r30, Y+18	; 0x12
+      } else {
+	if( ! lineWords ) {
+    7cbc:	ee 23       	and	r30, r30
+    7cbe:	11 f0       	breq	.+4      	; 0x7cc4 <_Z13sdcard_loaderv+0x204>
+    7cc0:	14 e0       	ldi	r17, 0x04	; 4
+	  hexReadStep = WAIT_FOR_LINE_START;
+	  stepBytesRemaining = 1;
+	} else { //next word
+	  stepBytesRemaining = 4;
+    7cc2:	02 c0       	rjmp	.+4      	; 0x7cc8 <_Z13sdcard_loaderv+0x208>
+    7cc4:	11 e0       	ldi	r17, 0x01	; 1
+      if( hexReadStep != READ_DATA ) {
+	hexReadStep++;
+      } else {
+	if( ! lineWords ) {
+	  hexReadStep = WAIT_FOR_LINE_START;
+	  stepBytesRemaining = 1;
+    7cc6:	00 e0       	ldi	r16, 0x00	; 0
+      /* go to next step */
+      if( hexReadStep != READ_DATA ) {
+	hexReadStep++;
+      } else {
+	if( ! lineWords ) {
+	  hexReadStep = WAIT_FOR_LINE_START;
+    7cc8:	1b 86       	std	Y+11, r1	; 0x0b
+	  stepBytesRemaining = 4;
+	}
+      }
+
+      /* clear number */
+      hexNumber = 0;
+    7cca:	1a 86       	std	Y+10, r1	; 0x0a
+    7ccc:	8c 88       	ldd	r8, Y+20	; 0x14
+      hexNumberByte = (uint8_t*)((void*)&hexNumber);
+    7cce:	9d 88       	ldd	r9, Y+21	; 0x15
+    7cd0:	3b cf       	rjmp	.-394    	; 0x7b48 <_Z13sdcard_loaderv+0x88>
+    7cd2:	8f ef       	ldi	r24, 0xFF	; 255
+int sdcard_loader(void) {
+
+  /* init sd card communication */
+  uint8_t cardType = SdCard_begin();
+  if( ! cardType ) {
+    return -1;
+    7cd4:	9f ef       	ldi	r25, 0xFF	; 255
+    7cd6:	05 c0       	rjmp	.+10     	; 0x7ce2 <_Z13sdcard_loaderv+0x222>
+    7cd8:	80 e0       	ldi	r24, 0x00	; 0
+	if( hexNumber == 0x01 ) {
+	  // file end terminate flash
+	  if( pageAddress != pageBaseAddress ) {
+	    write_page(pageBaseAddress);
+	  }
+	  return 0;
+    7cda:	90 e0       	ldi	r25, 0x00	; 0
+    7cdc:	02 c0       	rjmp	.+4      	; 0x7ce2 <_Z13sdcard_loaderv+0x222>
+	}
+
+	/* next read data word */
+	stepBytesRemaining = 4;
+    7cde:	14 e0       	ldi	r17, 0x04	; 4
+    7ce0:	ea cf       	rjmp	.-44     	; 0x7cb6 <_Z13sdcard_loaderv+0x1f6>
+    }
+  }
+
+  //must not reach this line
+  return -1;
+}
+    7ce2:	65 96       	adiw	r28, 0x15	; 21
+    7ce4:	e2 e1       	ldi	r30, 0x12	; 18
+    7ce6:	6b c1       	rjmp	.+726    	; 0x7fbe <__epilogue_restores__>
+
+00007ce8 <_Z14watchdogConfigh>:
+    "wdr\n"
+  );
+}
+
+void watchdogConfig(uint8_t x) {
+  WDTCSR = _BV(WDCE) | _BV(WDE);
+    7ce8:	e0 e6       	ldi	r30, 0x60	; 96
+    7cea:	f0 e0       	ldi	r31, 0x00	; 0
+    7cec:	98 e1       	ldi	r25, 0x18	; 24
+  WDTCSR = x;
+    7cee:	90 83       	st	Z, r25
+    7cf0:	80 83       	st	Z, r24
+    7cf2:	08 95       	ret
+
+00007cf4 <_Z11verifySpacev>:
+  do getch(); while (--count);
+  verifySpace();
+}
+
+void verifySpace() {
+  if (getch() != CRC_EOP) {
+    7cf4:	3f de       	rcall	.-898    	; 0x7974 <_Z5getchv>
+    7cf6:	80 32       	cpi	r24, 0x20	; 32
+    7cf8:	19 f0       	breq	.+6      	; 0x7d00 <_Z11verifySpacev+0xc>
+    watchdogConfig(WATCHDOG_16MS);    // shorten WD timeout
+    7cfa:	88 e0       	ldi	r24, 0x08	; 8
+    7cfc:	f5 df       	rcall	.-22     	; 0x7ce8 <_Z14watchdogConfigh>
+    7cfe:	ff cf       	rjmp	.-2      	; 0x7cfe <_Z11verifySpacev+0xa>
+    while (1)			      // and busy-loop so that WD causes
+      ;				      //  a reset and app start.
+  }
+  putch(STK_INSYNC);
+    7d00:	84 e1       	ldi	r24, 0x14	; 20
+    7d02:	31 ce       	rjmp	.-926    	; 0x7966 <_Z5putchc>
+    7d04:	08 95       	ret
+
+00007d06 <_ZL6getNchh>:
+  return -1;
+}
+
+
+
+void getNch(uint8_t count) {
+    7d06:	cf 93       	push	r28
+    7d08:	c8 2f       	mov	r28, r24
+  do getch(); while (--count);
+    7d0a:	34 de       	rcall	.-920    	; 0x7974 <_Z5getchv>
+    7d0c:	c1 50       	subi	r28, 0x01	; 1
+    7d0e:	e9 f7       	brne	.-6      	; 0x7d0a <_ZL6getNchh+0x4>
+    7d10:	f1 df       	rcall	.-30     	; 0x7cf4 <_Z11verifySpacev>
+  verifySpace();
+    7d12:	cf 91       	pop	r28
+    7d14:	08 95       	ret
+
+00007d16 <_Z8appStarth>:
+
+void appStart(uint8_t rstFlags) {
+  // save the reset flags in the designated register
+  //  This can be saved in a main program by putting code in .init0 (which
+  //  executes before normal c init code) to save R2 to a global variable.
+  __asm__ __volatile__ ("mov r2, %0\n" :: "r" (rstFlags));
+    7d16:	28 2e       	mov	r2, r24
+
+  watchdogConfig(WATCHDOG_OFF);
+    7d18:	80 e0       	ldi	r24, 0x00	; 0
+    7d1a:	e6 df       	rcall	.-52     	; 0x7ce8 <_Z14watchdogConfigh>
+    7d1c:	e0 e0       	ldi	r30, 0x00	; 0
+  __asm__ __volatile__ (
+    // Jump to 'save' or RST vector
+    "ldi r30,%[rstvec]\n"
+    "clr r31\n"
+    "ijmp\n"::[rstvec] "M"(appstart_vec)
+  );
+    7d1e:	ff 27       	eor	r31, r31
+    7d20:	09 94       	ijmp
+
+00007d22 <_Z9SPI_beginv>:
+
+void SPI_begin(void) {
+
+  /* set hardware spi SS, SCK and MOSI pin to output */
+  /* but do not set to high as it is not used */
+  DDRB = _BV(2) | _BV(3) | _BV(5); //2 -> SS, 3 -> MOSI, 5 -> SCK
+    7d22:	8c e2       	ldi	r24, 0x2C	; 44
+    7d24:	84 b9       	out	0x04, r24	; 4
+  
+  /* enable SPI */
+  SPCR = SPI_SPCR_CONFIG;
+    7d26:	80 e5       	ldi	r24, 0x50	; 80
+    7d28:	8c bd       	out	0x2c, r24	; 44
+    7d2a:	08 95       	ret
+
+00007d2c <_Z12SPI_transferh>:
+}
+ 
+uint8_t SPI_transfer(uint8_t data) {
+
+    SPDR = data;
+    7d2c:	8e bd       	out	0x2e, r24	; 46
+     * The following NOP introduces a small delay that can prevent the wait
+     * loop form iterating when running at the maximum speed. This gives
+     * about 10% more speed, even if it seems counter-intuitive. At lower
+     * speeds it is unnoticed.
+     */
+    asm volatile("nop");
+    7d2e:	00 00       	nop
+    while (!(SPSR & _BV(SPIF))) ; // wait
+    7d30:	0d b4       	in	r0, 0x2d	; 45
+    7d32:	07 fe       	sbrs	r0, 7
+    7d34:	fd cf       	rjmp	.-6      	; 0x7d30 <_Z12SPI_transferh+0x4>
+    return SPDR;
+    7d36:	8e b5       	in	r24, 0x2e	; 46
+}
+    7d38:	08 95       	ret
+
+00007d3a <_Z10spiReceivev>:
+// stop compiler from inlining where speed optimization is not required
+//#define STATIC_NOINLINE static __attribute__((noinline))
+
+uint8_t spiReceive(void) {
+  
+  return SPI_transfer(0xff);
+    7d3a:	8f ef       	ldi	r24, 0xFF	; 255
+    7d3c:	f7 cf       	rjmp	.-18     	; 0x7d2c <_Z12SPI_transferh>
+}
+    7d3e:	08 95       	ret
+
+00007d40 <_Z11waitNotBusyv>:
+
+bool waitNotBusy(void) {
+  uint16_t count = 0;
+  while (spiReceive() != 0xff) {
+    7d40:	fc df       	rcall	.-8      	; 0x7d3a <_Z10spiReceivev>
+    7d42:	8f 3f       	cpi	r24, 0xFF	; 255
+    7d44:	e9 f7       	brne	.-6      	; 0x7d40 <_Z11waitNotBusyv>
+    7d46:	81 e0       	ldi	r24, 0x01	; 1
+    if ( count >= SD_MAX_TRANSFERTS ) return false;
+  }
+  return true;
+}
+    7d48:	08 95       	ret
+
+00007d4a <_Z14chipSelectHighv>:
+
+void chipSelectHigh(void) {
+  
+  SD_SS_PORT_REG |= _BV(SD_SS_PIN);
+    7d4a:	28 9a       	sbi	0x05, 0	; 5
+    7d4c:	08 95       	ret
+
+00007d4e <_Z13chipSelectLowv>:
+}
+
+void chipSelectLow(void) {
+
+  SD_SS_PORT_REG &= ! _BV(SD_SS_PIN);
+    7d4e:	85 b1       	in	r24, 0x05	; 5
+    7d50:	15 b8       	out	0x05, r1	; 5
+    7d52:	08 95       	ret
+
+00007d54 <_Z11cardCommandhm>:
+}
+
+uint8_t cardCommand(uint8_t cmd, uint32_t arg) {
+    7d54:	a4 e0       	ldi	r26, 0x04	; 4
+    7d56:	b0 e0       	ldi	r27, 0x00	; 0
+    7d58:	ef ea       	ldi	r30, 0xAF	; 175
+    7d5a:	fe e3       	ldi	r31, 0x3E	; 62
+    7d5c:	23 c1       	rjmp	.+582    	; 0x7fa4 <__prologue_saves__+0x1e>
+    7d5e:	18 2f       	mov	r17, r24
+    7d60:	49 83       	std	Y+1, r20	; 0x01
+    7d62:	5a 83       	std	Y+2, r21	; 0x02
+    7d64:	6b 83       	std	Y+3, r22	; 0x03
+
+  /* wait not busy */
+  if (cmd != CMD0) {
+    7d66:	7c 83       	std	Y+4, r23	; 0x04
+    waitNotBusy();
+    7d68:	81 11       	cpse	r24, r1
+    7d6a:	ea df       	rcall	.-44     	; 0x7d40 <_Z11waitNotBusyv>
+  }
+
+  // send command
+  SPI_transfer(cmd | 0x40);
+    7d6c:	81 2f       	mov	r24, r17
+    7d6e:	80 64       	ori	r24, 0x40	; 64
+
+  // send argument
+  uint8_t *pa = reinterpret_cast<uint8_t *>(&arg);
+  for (int8_t i = 3; i >= 0; i--) {
+    SPI_transfer(pa[i]);
+    7d70:	dd df       	rcall	.-70     	; 0x7d2c <_Z12SPI_transferh>
+    7d72:	8c 81       	ldd	r24, Y+4	; 0x04
+    7d74:	db df       	rcall	.-74     	; 0x7d2c <_Z12SPI_transferh>
+    7d76:	8b 81       	ldd	r24, Y+3	; 0x03
+    7d78:	d9 df       	rcall	.-78     	; 0x7d2c <_Z12SPI_transferh>
+    7d7a:	8a 81       	ldd	r24, Y+2	; 0x02
+    7d7c:	d7 df       	rcall	.-82     	; 0x7d2c <_Z12SPI_transferh>
+    7d7e:	89 81       	ldd	r24, Y+1	; 0x01
+    7d80:	d5 df       	rcall	.-86     	; 0x7d2c <_Z12SPI_transferh>
+  }
+
+  // send CRC - correct for CMD0 with arg zero or CMD8 with arg 0X1AA
+  SPI_transfer(cmd == CMD0 ? 0X95 : 0X87);
+    7d82:	11 23       	and	r17, r17
+    7d84:	11 f0       	breq	.+4      	; 0x7d8a <_Z11cardCommandhm+0x36>
+    7d86:	87 e8       	ldi	r24, 0x87	; 135
+    7d88:	01 c0       	rjmp	.+2      	; 0x7d8c <_Z11cardCommandhm+0x38>
+    7d8a:	85 e9       	ldi	r24, 0x95	; 149
+
+  // discard first fill byte to avoid MISO pull-up problem.
+  spiReceive();
+    7d8c:	cf df       	rcall	.-98     	; 0x7d2c <_Z12SPI_transferh>
+    7d8e:	d5 df       	rcall	.-86     	; 0x7d3a <_Z10spiReceivev>
+
+  // there are 1-8 fill bytes before response.  fill bytes should be 0XFF.
+  uint8_t status;
+  for (uint8_t i = 0; ((status = spiReceive()) & 0X80) && i < 10; i++) {
+    7d90:	1b e0       	ldi	r17, 0x0B	; 11
+    7d92:	d3 df       	rcall	.-90     	; 0x7d3a <_Z10spiReceivev>
+    7d94:	87 ff       	sbrs	r24, 7
+    7d96:	02 c0       	rjmp	.+4      	; 0x7d9c <_Z11cardCommandhm+0x48>
+    7d98:	11 50       	subi	r17, 0x01	; 1
+    7d9a:	d9 f7       	brne	.-10     	; 0x7d92 <_Z11cardCommandhm+0x3e>
+  }
+  return status;
+}
+    7d9c:	24 96       	adiw	r28, 0x04	; 4
+    7d9e:	e3 e0       	ldi	r30, 0x03	; 3
+    7da0:	1d c1       	rjmp	.+570    	; 0x7fdc <__epilogue_restores__+0x1e>
+
+00007da2 <_Z8cardAcmdhm>:
+
+uint8_t cardAcmd(uint8_t cmd, uint32_t arg) {
+    7da2:	cf 92       	push	r12
+    7da4:	df 92       	push	r13
+    7da6:	ef 92       	push	r14
+    7da8:	ff 92       	push	r15
+    7daa:	cf 93       	push	r28
+    7dac:	c8 2f       	mov	r28, r24
+    7dae:	6a 01       	movw	r12, r20
+  
+  cardCommand(CMD55, 0);
+    7db0:	7b 01       	movw	r14, r22
+    7db2:	40 e0       	ldi	r20, 0x00	; 0
+    7db4:	50 e0       	ldi	r21, 0x00	; 0
+    7db6:	ba 01       	movw	r22, r20
+    7db8:	87 e3       	ldi	r24, 0x37	; 55
+    7dba:	cc df       	rcall	.-104    	; 0x7d54 <_Z11cardCommandhm>
+  return cardCommand(cmd, arg);
+    7dbc:	b7 01       	movw	r22, r14
+    7dbe:	a6 01       	movw	r20, r12
+    7dc0:	8c 2f       	mov	r24, r28
+    7dc2:	c8 df       	rcall	.-112    	; 0x7d54 <_Z11cardCommandhm>
+}
+    7dc4:	cf 91       	pop	r28
+    7dc6:	ff 90       	pop	r15
+    7dc8:	ef 90       	pop	r14
+    7dca:	df 90       	pop	r13
+    7dcc:	cf 90       	pop	r12
+    7dce:	08 95       	ret
+
+00007dd0 <_Z12SdCard_beginv>:
+
+
+
+uint8_t SdCard_begin(void) {
+    7dd0:	a0 e0       	ldi	r26, 0x00	; 0
+    7dd2:	b0 e0       	ldi	r27, 0x00	; 0
+    7dd4:	ed ee       	ldi	r30, 0xED	; 237
+    7dd6:	fe e3       	ldi	r31, 0x3E	; 62
+  uint16_t count = 0;
+  uint32_t arg;
+  uint8_t cardType;
+
+  // initialize SPI bus and chip select pin.
+  DDRB = _BV(2) | _BV(3) | _BV(5); //SS, MOSI, SCK
+    7dd8:	e0 c0       	rjmp	.+448    	; 0x7f9a <__prologue_saves__+0x14>
+    7dda:	8c e2       	ldi	r24, 0x2C	; 44
+  SD_SS_DDR_REG |= _BV(SD_SS_PIN); //SD SS as OUTPUT
+    7ddc:	84 b9       	out	0x04, r24	; 4
+  chipSelectHigh();
+    7dde:	20 9a       	sbi	0x04, 0	; 4
+    7de0:	b4 df       	rcall	.-152    	; 0x7d4a <_Z14chipSelectHighv>
+
+  // set SCK rate for initialization commands.
+  SPCR = SPI_SPCR_CONFIG | SPI_SCK_INIT_DIVISOR;
+    7de2:	80 e5       	ldi	r24, 0x50	; 80
+    7de4:	8c bd       	out	0x2c, r24	; 44
+  SPSR = 0x01; //enable SPI2X
+    7de6:	81 e0       	ldi	r24, 0x01	; 1
+  chipSelectLow();
+    7de8:	8d bd       	out	0x2d, r24	; 45
+    7dea:	b1 df       	rcall	.-158    	; 0x7d4e <_Z13chipSelectLowv>
+  
+  // must supply min of 74 clock cycles with CS high.
+  chipSelectHigh();
+    7dec:	ae df       	rcall	.-164    	; 0x7d4a <_Z14chipSelectHighv>
+    7dee:	ca e0       	ldi	r28, 0x0A	; 10
+    7df0:	a4 df       	rcall	.-184    	; 0x7d3a <_Z10spiReceivev>
+  for (uint8_t i = 0; i < 10; i++) {
+    spiReceive();
+    7df2:	c1 50       	subi	r28, 0x01	; 1
+    7df4:	e9 f7       	brne	.-6      	; 0x7df0 <_Z12SdCard_beginv+0x20>
+    7df6:	ab df       	rcall	.-170    	; 0x7d4e <_Z13chipSelectLowv>
+  SPSR = 0x01; //enable SPI2X
+  chipSelectLow();
+  
+  // must supply min of 74 clock cycles with CS high.
+  chipSelectHigh();
+  for (uint8_t i = 0; i < 10; i++) {
+    7df8:	0b e0       	ldi	r16, 0x0B	; 11
+    spiReceive();
+  }
+  
+  // command to go idle in SPI mode
+  chipSelectLow();
+    7dfa:	10 e0       	ldi	r17, 0x00	; 0
+    7dfc:	40 e0       	ldi	r20, 0x00	; 0
+    7dfe:	50 e0       	ldi	r21, 0x00	; 0
+  while (cardCommand(CMD0, 0) != R1_IDLE_STATE) {
+    7e00:	ba 01       	movw	r22, r20
+    7e02:	80 e0       	ldi	r24, 0x00	; 0
+    7e04:	a7 df       	rcall	.-178    	; 0x7d54 <_Z11cardCommandhm>
+    7e06:	81 30       	cpi	r24, 0x01	; 1
+    7e08:	21 f0       	breq	.+8      	; 0x7e12 <_Z12SdCard_beginv+0x42>
+    7e0a:	01 50       	subi	r16, 0x01	; 1
+    count++;
+    if( count > SD_MAX_CMD0_TRIES ) {
+    7e0c:	11 09       	sbc	r17, r1
+    7e0e:	b1 f7       	brne	.-20     	; 0x7dfc <_Z12SdCard_beginv+0x2c>
+      goto fail;
+    }
+  }
+
+  // check SD version
+  if (cardCommand(CMD8, 0x1AA) == (R1_ILLEGAL_COMMAND | R1_IDLE_STATE)) {
+    7e10:	38 c0       	rjmp	.+112    	; 0x7e82 <_Z12SdCard_beginv+0xb2>
+    7e12:	4a ea       	ldi	r20, 0xAA	; 170
+    7e14:	51 e0       	ldi	r21, 0x01	; 1
+    7e16:	60 e0       	ldi	r22, 0x00	; 0
+    7e18:	70 e0       	ldi	r23, 0x00	; 0
+    7e1a:	88 e0       	ldi	r24, 0x08	; 8
+    7e1c:	9b df       	rcall	.-202    	; 0x7d54 <_Z11cardCommandhm>
+    7e1e:	85 30       	cpi	r24, 0x05	; 5
+    7e20:	69 f0       	breq	.+26     	; 0x7e3c <_Z12SdCard_beginv+0x6c>
+    cardType = CARD_TYPE_SDV1;
+  } else {
+    for (uint8_t i = 0; i < 4; i++) {
+      status = spiReceive();
+    7e22:	8b df       	rcall	.-234    	; 0x7d3a <_Z10spiReceivev>
+    7e24:	8a df       	rcall	.-236    	; 0x7d3a <_Z10spiReceivev>
+    7e26:	89 df       	rcall	.-238    	; 0x7d3a <_Z10spiReceivev>
+    7e28:	88 df       	rcall	.-240    	; 0x7d3a <_Z10spiReceivev>
+    7e2a:	8a 3a       	cpi	r24, 0xAA	; 170
+    7e2c:	51 f5       	brne	.+84     	; 0x7e82 <_Z12SdCard_beginv+0xb2>
+    7e2e:	d2 e0       	ldi	r29, 0x02	; 2
+    }
+    if (status == 0XAA) {
+    7e30:	c1 2c       	mov	r12, r1
+    7e32:	d1 2c       	mov	r13, r1
+      cardType = CARD_TYPE_SDV2;
+    7e34:	e1 2c       	mov	r14, r1
+      goto fail;
+    }
+  }
+
+  // initialize card and send host supports SDHC if SD2
+  arg = cardType == CARD_TYPE_SDV2 ? 0X40000000 : 0;
+    7e36:	80 e4       	ldi	r24, 0x40	; 64
+    7e38:	f8 2e       	mov	r15, r24
+    7e3a:	04 c0       	rjmp	.+8      	; 0x7e44 <_Z12SdCard_beginv+0x74>
+    7e3c:	d1 e0       	ldi	r29, 0x01	; 1
+    7e3e:	c1 2c       	mov	r12, r1
+    }
+  }
+
+  // check SD version
+  if (cardCommand(CMD8, 0x1AA) == (R1_ILLEGAL_COMMAND | R1_IDLE_STATE)) {
+    cardType = CARD_TYPE_SDV1;
+    7e40:	d1 2c       	mov	r13, r1
+      goto fail;
+    }
+  }
+
+  // initialize card and send host supports SDHC if SD2
+  arg = cardType == CARD_TYPE_SDV2 ? 0X40000000 : 0;
+    7e42:	76 01       	movw	r14, r12
+    7e44:	b7 01       	movw	r22, r14
+
+  count = 0;
+  while (cardAcmd(ACMD41, arg) != R1_READY_STATE) {
+    7e46:	a6 01       	movw	r20, r12
+    7e48:	89 e2       	ldi	r24, 0x29	; 41
+    7e4a:	ab df       	rcall	.-170    	; 0x7da2 <_Z8cardAcmdhm>
+    7e4c:	81 11       	cpse	r24, r1
+    7e4e:	fa cf       	rjmp	.-12     	; 0x7e44 <_Z12SdCard_beginv+0x74>
+      goto fail;
+    }
+  }
+    
+  // if SD2 read OCR register to check for SDHC card
+  if (cardType == CARD_TYPE_SDV2) {
+    7e50:	d2 30       	cpi	r29, 0x02	; 2
+    if (cardCommand(CMD58, 0)) {
+    7e52:	81 f4       	brne	.+32     	; 0x7e74 <_Z12SdCard_beginv+0xa4>
+    7e54:	40 e0       	ldi	r20, 0x00	; 0
+    7e56:	50 e0       	ldi	r21, 0x00	; 0
+    7e58:	ba 01       	movw	r22, r20
+    7e5a:	8a e3       	ldi	r24, 0x3A	; 58
+    7e5c:	7b df       	rcall	.-266    	; 0x7d54 <_Z11cardCommandhm>
+      goto fail;
+    }
+    if ((spiReceive() & 0XC0) == 0XC0) {
+    7e5e:	81 11       	cpse	r24, r1
+    7e60:	10 c0       	rjmp	.+32     	; 0x7e82 <_Z12SdCard_beginv+0xb2>
+    7e62:	6b df       	rcall	.-298    	; 0x7d3a <_Z10spiReceivev>
+    7e64:	80 7c       	andi	r24, 0xC0	; 192
+      cardType = CARD_TYPE_SDHC;
+    }
+    // Discard rest of ocr - contains allowed voltage range.
+    for (uint8_t i = 0; i < 3; i++) {
+      spiReceive();
+    7e66:	80 3c       	cpi	r24, 0xC0	; 192
+    7e68:	09 f4       	brne	.+2      	; 0x7e6c <_Z12SdCard_beginv+0x9c>
+    7e6a:	d3 e0       	ldi	r29, 0x03	; 3
+    7e6c:	66 df       	rcall	.-308    	; 0x7d3a <_Z10spiReceivev>
+    7e6e:	65 df       	rcall	.-310    	; 0x7d3a <_Z10spiReceivev>
+    7e70:	64 df       	rcall	.-312    	; 0x7d3a <_Z10spiReceivev>
+    7e72:	01 c0       	rjmp	.+2      	; 0x7e76 <_Z12SdCard_beginv+0xa6>
+    }
+  }
+
+  /* reset SPI clock */
+  SPCR = SPI_SPCR_CONFIG;
+    7e74:	d1 e0       	ldi	r29, 0x01	; 1
+    7e76:	80 e5       	ldi	r24, 0x50	; 80
+  chipSelectHigh();
+    7e78:	8c bd       	out	0x2c, r24	; 44
+    7e7a:	67 df       	rcall	.-306    	; 0x7d4a <_Z14chipSelectHighv>
+  spiReceive();
+    7e7c:	5e df       	rcall	.-324    	; 0x7d3a <_Z10spiReceivev>
+    7e7e:	cd 2f       	mov	r28, r29
+  return cardType;
+    7e80:	02 c0       	rjmp	.+4      	; 0x7e86 <_Z12SdCard_beginv+0xb6>
+    7e82:	63 df       	rcall	.-314    	; 0x7d4a <_Z14chipSelectHighv>
+
+ fail:
+  chipSelectHigh();
+    7e84:	5a df       	rcall	.-332    	; 0x7d3a <_Z10spiReceivev>
+  spiReceive();
+    7e86:	8c 2f       	mov	r24, r28
+    7e88:	cd b7       	in	r28, 0x3d	; 61
+  return 0;
+}
+    7e8a:	de b7       	in	r29, 0x3e	; 62
+    7e8c:	e8 e0       	ldi	r30, 0x08	; 8
+    7e8e:	a1 c0       	rjmp	.+322    	; 0x7fd2 <__epilogue_restores__+0x14>
+
+00007e90 <_Z16SdCard_readBlockmh>:
+ * \param[in] blockNumber Logical block to be read.
+ * \param[out] dst Pointer to the location that will receive the data.
+ * \return The value one, true, is returned for success and
+ * the value zero, false, is returned for failure.
+ */
+bool SdCard_readBlock(uint32_t blockNumber, uint8_t cardType) {
+    7e90:	cf 92       	push	r12
+    7e92:	df 92       	push	r13
+    7e94:	ef 92       	push	r14
+    7e96:	ff 92       	push	r15
+    7e98:	cf 93       	push	r28
+
+  uint8_t status;
+  uint16_t count;
+
+  /* start SPI */
+  chipSelectLow();
+    7e9a:	df 93       	push	r29
+  
+  /* get block number */
+  if (cardType != CARD_TYPE_SDHC) {
+    7e9c:	6b 01       	movw	r12, r22
+    blockNumber <<= 9;
+    7e9e:	7c 01       	movw	r14, r24
+    7ea0:	c4 2f       	mov	r28, r20
+    7ea2:	55 df       	rcall	.-342    	; 0x7d4e <_Z13chipSelectLowv>
+    7ea4:	c3 30       	cpi	r28, 0x03	; 3
+    7ea6:	39 f0       	breq	.+14     	; 0x7eb6 <_Z16SdCard_readBlockmh+0x26>
+    7ea8:	89 e0       	ldi	r24, 0x09	; 9
+    7eaa:	cc 0c       	add	r12, r12
+  }
+  if (cardCommand(CMD17, blockNumber)) {
+    7eac:	dd 1c       	adc	r13, r13
+    7eae:	ee 1c       	adc	r14, r14
+    7eb0:	ff 1c       	adc	r15, r15
+    7eb2:	8a 95       	dec	r24
+    7eb4:	d1 f7       	brne	.-12     	; 0x7eaa <_Z16SdCard_readBlockmh+0x1a>
+    7eb6:	b7 01       	movw	r22, r14
+    7eb8:	a6 01       	movw	r20, r12
+  /********/
+  /* read */
+  /********/
+  // wait for start block token
+  count = 0;
+  while ((status = spiReceive()) == 0XFF) {
+    7eba:	81 e1       	ldi	r24, 0x11	; 17
+    7ebc:	4b df       	rcall	.-362    	; 0x7d54 <_Z11cardCommandhm>
+    7ebe:	81 11       	cpse	r24, r1
+    7ec0:	13 c0       	rjmp	.+38     	; 0x7ee8 <_Z16SdCard_readBlockmh+0x58>
+    count++;
+    if (count > SD_MAX_TRANSFERTS) {
+      goto fail;
+    }
+  }
+  if (status != DATA_START_BLOCK) {
+    7ec2:	3b df       	rcall	.-394    	; 0x7d3a <_Z10spiReceivev>
+    7ec4:	8f 3f       	cpi	r24, 0xFF	; 255
+    7ec6:	e9 f3       	breq	.-6      	; 0x7ec2 <_Z16SdCard_readBlockmh+0x32>
+    goto fail;
+  }
+  // transfer data
+  for (int i = 0; i < 512; i++) {
+    buff[i] = spiReceive();
+    7ec8:	8e 3f       	cpi	r24, 0xFE	; 254
+    7eca:	71 f4       	brne	.+28     	; 0x7ee8 <_Z16SdCard_readBlockmh+0x58>
+    7ecc:	c0 e0       	ldi	r28, 0x00	; 0
+  }
+  if (status != DATA_START_BLOCK) {
+    goto fail;
+  }
+  // transfer data
+  for (int i = 0; i < 512; i++) {
+    7ece:	d1 e0       	ldi	r29, 0x01	; 1
+    7ed0:	34 df       	rcall	.-408    	; 0x7d3a <_Z10spiReceivev>
+    7ed2:	89 93       	st	Y+, r24
+    7ed4:	c1 15       	cp	r28, r1
+    buff[i] = spiReceive();
+  }
+  
+  // discard crc
+  spiReceive();
+    7ed6:	83 e0       	ldi	r24, 0x03	; 3
+    7ed8:	d8 07       	cpc	r29, r24
+  spiReceive();
+    7eda:	d1 f7       	brne	.-12     	; 0x7ed0 <_Z16SdCard_readBlockmh+0x40>
+
+  // ok
+  chipSelectHigh();
+    7edc:	2e df       	rcall	.-420    	; 0x7d3a <_Z10spiReceivev>
+    7ede:	2d df       	rcall	.-422    	; 0x7d3a <_Z10spiReceivev>
+  spiReceive();
+    7ee0:	34 df       	rcall	.-408    	; 0x7d4a <_Z14chipSelectHighv>
+    7ee2:	2b df       	rcall	.-426    	; 0x7d3a <_Z10spiReceivev>
+  return true;
+    7ee4:	81 e0       	ldi	r24, 0x01	; 1
+
+fail:
+  chipSelectHigh();
+    7ee6:	03 c0       	rjmp	.+6      	; 0x7eee <_Z16SdCard_readBlockmh+0x5e>
+    7ee8:	30 df       	rcall	.-416    	; 0x7d4a <_Z14chipSelectHighv>
+  spiReceive();
+    7eea:	27 df       	rcall	.-434    	; 0x7d3a <_Z10spiReceivev>
+  return false;
+    7eec:	80 e0       	ldi	r24, 0x00	; 0
+}
+    7eee:	df 91       	pop	r29
+    7ef0:	cf 91       	pop	r28
+    7ef2:	ff 90       	pop	r15
+    7ef4:	ef 90       	pop	r14
+    7ef6:	df 90       	pop	r13
+    7ef8:	cf 90       	pop	r12
+    7efa:	08 95       	ret
+
+00007efc <_Z17SdCard_writeBlockmh>:
+ * \param[in] blockNumber Logical block to be written.
+ * \param[in] src Pointer to the location of the data to be written.
+ * \return The value one, true, is returned for success and
+ * the value zero, false, is returned for failure.
+ */
+bool SdCard_writeBlock(uint32_t blockNumber, uint8_t cardType) {
+    7efc:	cf 92       	push	r12
+    7efe:	df 92       	push	r13
+    7f00:	ef 92       	push	r14
+    7f02:	ff 92       	push	r15
+    7f04:	cf 93       	push	r28
+    7f06:	df 93       	push	r29
+    7f08:	6b 01       	movw	r12, r22
+
+  uint8_t status;
+ 
+  /* start SPI */
+  chipSelectLow();
+    7f0a:	7c 01       	movw	r14, r24
+    
+  /* set block number */
+  if (cardType != CARD_TYPE_SDHC) {
+    7f0c:	c4 2f       	mov	r28, r20
+    blockNumber <<= 9;
+    7f0e:	1f df       	rcall	.-450    	; 0x7d4e <_Z13chipSelectLowv>
+    7f10:	c3 30       	cpi	r28, 0x03	; 3
+    7f12:	39 f0       	breq	.+14     	; 0x7f22 <_Z17SdCard_writeBlockmh+0x26>
+    7f14:	89 e0       	ldi	r24, 0x09	; 9
+    7f16:	cc 0c       	add	r12, r12
+  }
+  if (cardCommand(CMD24, blockNumber)) {
+    7f18:	dd 1c       	adc	r13, r13
+    7f1a:	ee 1c       	adc	r14, r14
+    7f1c:	ff 1c       	adc	r15, r15
+    7f1e:	8a 95       	dec	r24
+    7f20:	d1 f7       	brne	.-12     	; 0x7f16 <_Z17SdCard_writeBlockmh+0x1a>
+    7f22:	b7 01       	movw	r22, r14
+    7f24:	a6 01       	movw	r20, r12
+  }
+
+  /*********/
+  /* write */
+  /*********/
+  SPI_transfer(DATA_START_BLOCK);
+    7f26:	88 e1       	ldi	r24, 0x18	; 24
+    7f28:	15 df       	rcall	.-470    	; 0x7d54 <_Z11cardCommandhm>
+    7f2a:	81 11       	cpse	r24, r1
+    7f2c:	21 c0       	rjmp	.+66     	; 0x7f70 <_Z17SdCard_writeBlockmh+0x74>
+    7f2e:	8e ef       	ldi	r24, 0xFE	; 254
+  for (int i = 0; i < 512; i++) {
+    SPI_transfer(buff[i]);
+    7f30:	fd de       	rcall	.-518    	; 0x7d2c <_Z12SPI_transferh>
+    7f32:	c0 e0       	ldi	r28, 0x00	; 0
+    7f34:	d1 e0       	ldi	r29, 0x01	; 1
+
+  /*********/
+  /* write */
+  /*********/
+  SPI_transfer(DATA_START_BLOCK);
+  for (int i = 0; i < 512; i++) {
+    7f36:	89 91       	ld	r24, Y+
+    7f38:	f9 de       	rcall	.-526    	; 0x7d2c <_Z12SPI_transferh>
+    7f3a:	c1 15       	cp	r28, r1
+    7f3c:	83 e0       	ldi	r24, 0x03	; 3
+    SPI_transfer(buff[i]);
+  }
+  spiReceive();
+    7f3e:	d8 07       	cpc	r29, r24
+    7f40:	d1 f7       	brne	.-12     	; 0x7f36 <_Z17SdCard_writeBlockmh+0x3a>
+  spiReceive();
+    7f42:	fb de       	rcall	.-522    	; 0x7d3a <_Z10spiReceivev>
+    7f44:	fa de       	rcall	.-524    	; 0x7d3a <_Z10spiReceivev>
+    
+  status = spiReceive();
+    7f46:	f9 de       	rcall	.-526    	; 0x7d3a <_Z10spiReceivev>
+    7f48:	8f 71       	andi	r24, 0x1F	; 31
+  if ((status & DATA_RES_MASK) != DATA_RES_ACCEPTED) {
+    7f4a:	85 30       	cpi	r24, 0x05	; 5
+    7f4c:	89 f4       	brne	.+34     	; 0x7f70 <_Z17SdCard_writeBlockmh+0x74>
+    7f4e:	f8 de       	rcall	.-528    	; 0x7d40 <_Z11waitNotBusyv>
+  }
+
+  /**********************/
+  /* flush cache buffer */
+  /**********************/
+  if ( !waitNotBusy() ) {
+    7f50:	c8 2f       	mov	r28, r24
+    7f52:	88 23       	and	r24, r24
+    7f54:	69 f0       	breq	.+26     	; 0x7f70 <_Z17SdCard_writeBlockmh+0x74>
+    7f56:	40 e0       	ldi	r20, 0x00	; 0
+    7f58:	50 e0       	ldi	r21, 0x00	; 0
+    goto fail;
+  }
+  
+  // response is r2 so get and check two bytes for nonzero
+  if (cardCommand(CMD13, 0) || spiReceive()) {
+    7f5a:	ba 01       	movw	r22, r20
+    7f5c:	8d e0       	ldi	r24, 0x0D	; 13
+    7f5e:	fa de       	rcall	.-524    	; 0x7d54 <_Z11cardCommandhm>
+    7f60:	81 11       	cpse	r24, r1
+    7f62:	06 c0       	rjmp	.+12     	; 0x7f70 <_Z17SdCard_writeBlockmh+0x74>
+    7f64:	ea de       	rcall	.-556    	; 0x7d3a <_Z10spiReceivev>
+    7f66:	81 11       	cpse	r24, r1
+    7f68:	03 c0       	rjmp	.+6      	; 0x7f70 <_Z17SdCard_writeBlockmh+0x74>
+    7f6a:	ef de       	rcall	.-546    	; 0x7d4a <_Z14chipSelectHighv>
+    7f6c:	e6 de       	rcall	.-564    	; 0x7d3a <_Z10spiReceivev>
+    7f6e:	03 c0       	rjmp	.+6      	; 0x7f76 <_Z17SdCard_writeBlockmh+0x7a>
+    7f70:	ec de       	rcall	.-552    	; 0x7d4a <_Z14chipSelectHighv>
+    goto fail;
+  }
+
+  // ok
+  chipSelectHigh();
+    7f72:	e3 de       	rcall	.-570    	; 0x7d3a <_Z10spiReceivev>
+    7f74:	c0 e0       	ldi	r28, 0x00	; 0
+  spiReceive();
+    7f76:	8c 2f       	mov	r24, r28
+    7f78:	df 91       	pop	r29
+  return true;
+    7f7a:	cf 91       	pop	r28
+  
+ fail:
+  chipSelectHigh();
+    7f7c:	ff 90       	pop	r15
+    7f7e:	ef 90       	pop	r14
+  spiReceive();
+    7f80:	df 90       	pop	r13
+    7f82:	cf 90       	pop	r12
+  return false;
+    7f84:	08 95       	ret
+
+00007f86 <__prologue_saves__>:
+}
+    7f86:	2f 92       	push	r2
+    7f88:	3f 92       	push	r3
+    7f8a:	4f 92       	push	r4
+    7f8c:	5f 92       	push	r5
+    7f8e:	6f 92       	push	r6
+    7f90:	7f 92       	push	r7
+    7f92:	8f 92       	push	r8
+    7f94:	9f 92       	push	r9
+    7f96:	af 92       	push	r10
+    7f98:	bf 92       	push	r11
+    7f9a:	cf 92       	push	r12
+    7f9c:	df 92       	push	r13
+    7f9e:	ef 92       	push	r14
+    7fa0:	ff 92       	push	r15
+    7fa2:	0f 93       	push	r16
+    7fa4:	1f 93       	push	r17
+    7fa6:	cf 93       	push	r28
+    7fa8:	df 93       	push	r29
+    7faa:	cd b7       	in	r28, 0x3d	; 61
+    7fac:	de b7       	in	r29, 0x3e	; 62
+    7fae:	ca 1b       	sub	r28, r26
+    7fb0:	db 0b       	sbc	r29, r27
+    7fb2:	0f b6       	in	r0, 0x3f	; 63
+    7fb4:	f8 94       	cli
+    7fb6:	de bf       	out	0x3e, r29	; 62
+    7fb8:	0f be       	out	0x3f, r0	; 63
+    7fba:	cd bf       	out	0x3d, r28	; 61
+    7fbc:	09 94       	ijmp
+
+00007fbe <__epilogue_restores__>:
+    7fbe:	2a 88       	ldd	r2, Y+18	; 0x12
+    7fc0:	39 88       	ldd	r3, Y+17	; 0x11
+    7fc2:	48 88       	ldd	r4, Y+16	; 0x10
+    7fc4:	5f 84       	ldd	r5, Y+15	; 0x0f
+    7fc6:	6e 84       	ldd	r6, Y+14	; 0x0e
+    7fc8:	7d 84       	ldd	r7, Y+13	; 0x0d
+    7fca:	8c 84       	ldd	r8, Y+12	; 0x0c
+    7fcc:	9b 84       	ldd	r9, Y+11	; 0x0b
+    7fce:	aa 84       	ldd	r10, Y+10	; 0x0a
+    7fd0:	b9 84       	ldd	r11, Y+9	; 0x09
+    7fd2:	c8 84       	ldd	r12, Y+8	; 0x08
+    7fd4:	df 80       	ldd	r13, Y+7	; 0x07
+    7fd6:	ee 80       	ldd	r14, Y+6	; 0x06
+    7fd8:	fd 80       	ldd	r15, Y+5	; 0x05
+    7fda:	0c 81       	ldd	r16, Y+4	; 0x04
+    7fdc:	1b 81       	ldd	r17, Y+3	; 0x03
+    7fde:	aa 81       	ldd	r26, Y+2	; 0x02
+    7fe0:	b9 81       	ldd	r27, Y+1	; 0x01
+    7fe2:	ce 0f       	add	r28, r30
+    7fe4:	d1 1d       	adc	r29, r1
+    7fe6:	0f b6       	in	r0, 0x3f	; 63
+    7fe8:	f8 94       	cli
+    7fea:	de bf       	out	0x3e, r29	; 62
+    7fec:	0f be       	out	0x3f, r0	; 63
+    7fee:	cd bf       	out	0x3d, r28	; 61
+    7ff0:	ed 01       	movw	r28, r26
+    7ff2:	08 95       	ret
